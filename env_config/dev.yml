@@ -1,0 +1,15 @@
+queryType: query
+
+getAllType: all
+
+region: us-east-1
+
+artifactPath: target/user-search-1.0-SNAPSHOT.jar
+
+memorySize: 512
+
+timeout: 30
+
+deploymentBucketName: ntwhitfi-serverless-deployment-bucket
+
+lambdaRole: arn:aws:iam::380986832728:role/UserSearchRole-dev
