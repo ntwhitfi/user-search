@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Creates the IAM Role for the User Search Service Lambda.
+
+Parameters:
+  Author:
+    Description: Author's name
+    Type: String
+    Default: ntwhitfi
+    MinLength: 3
+    MaxLength: 30
+  DynamoDBTableName:
+    Description: User search table name
+    Type: String
+    Default: UserSearchTable
+  Environment:
+    Description: dev, stg, prod, etc...
+    Type: String
+    Default: dev
+    MinLength: 2
+    MaxLength: 30
+
+Resources:
+  TicketingSystemAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '', [ 'UserSearchRole-', !Ref Environment ] ]
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: UserSearchDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:BatchGetItem
+                  - dynamodb:GetItem
+                  - dynamodb:GetRecords
+                  - dynamodb:Scan
+                Resource: !Sub "arn:aws:dynamodb:us-east-1:${AWS::AccountId}:table/${DynamoDBTableName}"
