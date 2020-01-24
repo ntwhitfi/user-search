@@ -1,0 +1,38 @@
+app: user-search
+
+service:
+  name: user-search-etl
+  description: |
+    This service is used to transform and push records to the user search table
+
+frameworkVersion: ">=1.9.0 <2.0.0"
+
+custom:
+  props: ${file(env_config/${opt:stage, self:provider.stage}.yml)}
+
+package:
+  artifact: ${self:custom.props.artifactPath}
+
+provider:
+  name: aws
+  runtime: java8
+  stage: dev
+  region: ${self:custom.props.region}
+  memorySize: ${self:custom.props.memorySize}
+  timeout: ${self:custom.props.timeout}
+  deploymentBucket: ${self:custom.props.deploymentBucketName}
+  role: ${self:custom.props.lambdaRole}
+
+functions:
+  UserSearchHandler:
+    handler: ntwhitfi.user.search.etl.handler.UserETLHandler
+    name: UserETLHandler-${opt:stage, self:provider.stage}
+    environment:
+      ROLE_TO_DEPARTMENT_MAP: ${self:custom.props.roleToDepartmentMap}
+      USER_ETL_START_COMMAND: ${self:custom.props.userETLStartCommand}
+    events:
+      - schedule:
+          rate: rate(24 hours)
+          enabled: true
+          input:
+            command: start
