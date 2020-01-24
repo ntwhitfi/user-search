@@ -1,0 +1,58 @@
+app: user-search
+
+service:
+  name: user-search-service
+  description: |
+    This service is used to search for user records
+
+frameworkVersion: ">=1.9.0 <2.0.0"
+
+custom:
+  props: ${file(env_config/${opt:stage, self:provider.stage}.yml)}
+
+package:
+  artifact: ${self:custom.props.artifactPath}
+
+provider:
+  name: aws
+  runtime: java8
+  stage: dev
+  region: ${self:custom.props.region}
+  memorySize: ${self:custom.props.memorySize}
+  timeout: ${self:custom.props.timeout}
+  deploymentBucket: ${self:custom.props.deploymentBucketName}
+  role: ${self:custom.props.lambdaRole}
+
+functions:
+  UserSearchHandler:
+    handler: ntwhitfi.user.search.handler.UserSearchHandler
+    name: UserSearchHandler-${opt:stage, self:provider.stage}
+    environment:
+      QUERY_TYPE: ${self:custom.props.queryType}
+      GET_ALL_TYPE: ${self:custom.props.getAllType}
+    events:
+      - http:
+          path: /user/search
+          method: GET
+          request:
+            parameters:
+              querystrings:
+                type: true
+                query: false
+            template:
+              application/json: '{"type": "$input.params("type")", "query": "$input.params("query")"}'
+          integration: lambda
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    userSearchTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UserSearchTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
