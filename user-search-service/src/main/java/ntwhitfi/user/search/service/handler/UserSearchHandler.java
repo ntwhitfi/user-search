@@ -2,6 +2,8 @@ package ntwhitfi.user.search.service.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import ntwhitfi.user.search.service.config.DaggerUserSearchComponent;
 import ntwhitfi.user.search.service.config.UserSearchComponent;
 import ntwhitfi.user.search.common.model.UserRecord;
@@ -12,10 +14,12 @@ import ntwhitfi.user.search.service.IUserSearchService;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class UserSearchHandler implements RequestHandler<UserSearchRequest, UserSearchResponse> {
 
     private static String QUERY_TYPE = System.getenv("QUERY_TYPE");
     private static String GET_ALL_TYPE = System.getenv("GET_ALL_TYPE");
+    private Gson gson = new Gson();
 
     private IUserSearchService userSearchService;
 
@@ -33,6 +37,8 @@ public class UserSearchHandler implements RequestHandler<UserSearchRequest, User
 
     @Override
     public UserSearchResponse handleRequest(UserSearchRequest userSearchRequest, Context context) {
+        log.info("User search request: " + gson.toJson(userSearchRequest));
+
         List<UserRecord> userRecords = new ArrayList<>();
         int statusCode;
         String statusMessage;
@@ -55,6 +61,9 @@ public class UserSearchHandler implements RequestHandler<UserSearchRequest, User
             statusMessage = "Invalid message type provided.";
         }
 
-        return UserSearchResponse.builder().statusCode(statusCode).statusMessage(statusMessage).userRecords(userRecords).build();
+        UserSearchResponse userSearchResponse = UserSearchResponse.builder().statusCode(statusCode).statusMessage(statusMessage).userRecords(userRecords).build();
+
+        log.info("User search response: " + gson.toJson(userSearchResponse));
+        return userSearchResponse;
     }
 }

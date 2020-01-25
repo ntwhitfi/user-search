@@ -1,8 +1,6 @@
 package ntwhitfi.user.search.common.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import lombok.*;
 
 @DynamoDBTable(tableName="UserSearchTable")
@@ -17,6 +15,7 @@ public class UserRecord {
     private String id;
 
     @DynamoDBAttribute(attributeName="active")
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     private Boolean active;
 
     @DynamoDBAttribute(attributeName="firstName")
