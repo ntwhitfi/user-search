@@ -1,5 +1,8 @@
 <template>
   <div class="userSearch">
+    <div class="loading-overlay" v-if="isLoading">
+      <b-spinner style="margin: auto; width: 8rem; height: 8rem;" variant="primary" label="Text Centered"></b-spinner>
+    </div>
     <b-card>
       <b-input-group class="mt-3">
         <b-form-input 
@@ -27,7 +30,8 @@ export default {
   data() {
     return {
       records: [],
-      searchQuery: ""
+      searchQuery: "",
+      isLoading: false
     }
   },
   computed: {
@@ -38,8 +42,10 @@ export default {
   methods: {
       async searchRecords(evt){
         evt.preventDefault()
+        this.isLoading = true
         let searchResponse = await api.searchUser(this.searchQuery)
         this.records = searchResponse.data.userRecords
+        this.isLoading = false
         this.$refs.userTable.refresh();
       }
   }
@@ -61,5 +67,13 @@ li {
 }
 a {
   color: #42b983;
+}
+.loading-overlay {
+  position: fixed;
+  z-index: 99999;
+  width: 100%;
+  height: 100%;
+  background-color: #F5F5F5;
+  opacity: 0.5;
 }
 </style>
