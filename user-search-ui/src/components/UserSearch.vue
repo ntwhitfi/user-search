@@ -1,6 +1,6 @@
 <template>
   <div class="userSearch">
-    <b-form @submit="searchRecords">
+    <b-card>
       <b-input-group class="mt-3">
         <b-form-input 
           id="search-input"
@@ -9,11 +9,11 @@
           placeholder="Search users by name or department"
         ></b-form-input>
         <b-input-group-append>
-          <b-button type="submit" variant="info">search</b-button>
+          <b-button @click="searchRecords" variant="info">search</b-button>
         </b-input-group-append>
       </b-input-group>
-    </b-form>
-    <b-table ref="userTable" striped hover :items="records"></b-table>
+      <b-table ref="userTable" striped hover :items="records"></b-table>
+    </b-card>
   </div>
 </template>
 
