@@ -24,7 +24,7 @@ provider:
   role: ${self:custom.props.lambdaRole}
 
 functions:
-  UserSearchHandler:
+  UserETLHandler:
     handler: ntwhitfi.user.search.etl.handler.UserETLHandler
     name: UserETLHandler-${opt:stage, self:provider.stage}
     environment:
@@ -36,3 +36,64 @@ functions:
           enabled: true
           input:
             command: start
+            
+resources:
+  Resources:
+    #Create SNS topic to handle sending the CloudWatch alarms
+    UserETLHandlerSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: UserETLSNSTopic-${opt:stage, self:provider.stage}
+        Subscription:
+          - Endpoint: ${self:custom.props.sns.endpoint}
+            Protocol: ${self:custom.props.sns.protocol}
+        Tags: ${self:custom.props.tags}
+        TopicName: UserETLSNSTopic-${opt:stage, self:provider.stage}
+
+    #UserETLHandler CloudWatch Alarms.
+
+    #Alarm to detect execution errors or errors invoking the lambda function
+    UserETLHandlerInvocationErrorAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "An error occurred while invoking the UserETLHandler Lambda function."
+        AlarmName:
+          UserETLHandler-${opt:stage, self:provider.stage}-ErrorAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: UserETLHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Errors"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref UserETLHandlerSNSTopic
+        OKActions:
+          - !Ref UserETLHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    #Alarm for excessive invocations of the lambda. SAVE THE MONEY!! Or detect potential attacks
+    UserETLHandlerInvocationCountAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
+        AlarmName:
+          UserETLHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: UserETLHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Invocations"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref UserETLHandlerSNSTopic
+        OKActions:
+          - !Ref UserETLHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 500
+        TreatMissingData: notBreaching

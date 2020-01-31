@@ -45,6 +45,7 @@ functions:
 
 resources: # CloudFormation template syntax from here on.
   Resources:
+    #Create the DynamoDB table that will contain searchable user records
     userSearchTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -56,3 +57,62 @@ resources: # CloudFormation template syntax from here on.
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+
+    #Create SNS topic to handle sending the CloudWatch alarms
+    UserSearchHandlerSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: UserSearchSNSTopic-${opt:stage, self:provider.stage}
+        Subscription:
+          - Endpoint: ${self:custom.props.sns.endpoint}
+            Protocol: ${self:custom.props.sns.protocol}
+        Tags: ${self:custom.props.tags}
+        TopicName: UserSearchSNSTopic-${opt:stage, self:provider.stage}
+
+    #UserSearchHandler CloudWatch Alarms.
+
+    #Alarm to detect execution errors or errors invoking the lambda function
+    UserSearchHandlerInvocationErrorAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "An error occurred while invoking the UserSearchHandler Lambda function."
+        AlarmName:
+          UserSearchHandler-${opt:stage, self:provider.stage}-ErrorAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: UserSearchHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Errors"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref UserSearchHandlerSNSTopic
+        OKActions:
+          - !Ref UserSearchHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    #Alarm for excessive invocations of the lambda. SAVE THE MONEY!! Or detect potential attacks
+    UserSearchHandlerInvocationCountAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
+        AlarmName:
+          UserSearchHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: UserSearchHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Invocations"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref UserSearchHandlerSNSTopic
+        OKActions:
+          - !Ref UserSearchHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 500
+        TreatMissingData: notBreaching
