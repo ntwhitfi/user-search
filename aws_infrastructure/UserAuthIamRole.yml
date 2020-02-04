@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Creates the IAM Role for the User Search auth function.
+
+Parameters:
+  Author:
+    Description: Author's name
+    Type: String
+    Default: ntwhitfi
+    MinLength: 3
+    MaxLength: 30
+  UserPoolId:
+    Description: The cognito user pool id to give permissions for
+    Type: String
+    Default: us-east-1_6RJhZOwDs
+  Environment:
+    Description: dev, stg, prod, etc...
+    Type: String
+    Default: dev
+    MinLength: 2
+    MaxLength: 30
+
+Resources:
+  UserAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '', [ 'UserAuthRole-', !Ref Environment ] ]
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: UserAuthCognitoAuthPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminCreateUser
+                  - cognito-idp:AdminInitiateAuth
+                Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}"

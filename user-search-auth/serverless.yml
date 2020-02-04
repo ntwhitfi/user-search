@@ -1,15 +1,23 @@
 app: user-search
 
 service:
-  name: user-search-service
+  name: user-search-auth
   description: |
-    This service is used to search for user records
+    This service is used to authenticate users for the user search service
 
 frameworkVersion: ">=1.9.0 <2.0.0"
 
 custom:
   props: ${file(env_config/${opt:stage, self:provider.stage}.yml)}
-
+  authRequestModel:
+    '{
+       "username": {
+         "type": "string"
+       },
+       "password": {
+         "type": "string"
+       }
+     }'
 package:
   artifact: ${self:custom.props.artifactPath}
 
@@ -24,97 +32,79 @@ provider:
   role: ${self:custom.props.lambdaRole}
 
 functions:
-  UserSearchHandler:
-    handler: ntwhitfi.user.search.service.handler.UserSearchHandler
-    name: UserSearchHandler-${opt:stage, self:provider.stage}
+  UserAuthHandler:
+    handler: ntwhitfi.user.search.auth.handler.UserAuthHandler
+    name: UserAuthHandler-${opt:stage, self:provider.stage}
     environment:
-      QUERY_TYPE: ${self:custom.props.queryType}
-      GET_ALL_TYPE: ${self:custom.props.getAllType}
+      USER_POOL_ID: ${self:custom.props.cognitoUserPoolId}
+      CLIENT_ID: ${self:custom.props.cognitoClientId}
     events:
       - http:
-          path: /user/search
-          method: GET
-          authorizer:
-            arn: ${self:custom.props.lambdaAuthorizer}
-            identitySource: method.request.header.Authorization
+          path: /auth
+          method: POST
           request:
             parameters:
-              querystrings:
-                type: true
-                query: false
+              application/json: ${self:custom.authRequestModel}
             template:
-              application/json: '{"type": "$input.params("type")", "query": "$input.params("query")"}'
+              application/json: '$input.body'
           integration: lambda
 
 resources: # CloudFormation template syntax from here on.
   Resources:
-    #Create the DynamoDB table that will contain searchable user records
-    userSearchTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: UserSearchTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-
     #Create SNS topic to handle sending the CloudWatch alarms
-    UserSearchHandlerSNSTopic:
+    UserAuthHandlerSNSTopic:
       Type: AWS::SNS::Topic
       Properties:
-        DisplayName: UserSearchSNSTopic-${opt:stage, self:provider.stage}
+        DisplayName: UserAuthSNSTopic-${opt:stage, self:provider.stage}
         Subscription:
           - Endpoint: ${self:custom.props.sns.endpoint}
             Protocol: ${self:custom.props.sns.protocol}
         Tags: ${self:custom.props.tags}
-        TopicName: UserSearchSNSTopic-${opt:stage, self:provider.stage}
+        TopicName: UserAuthSNSTopic-${opt:stage, self:provider.stage}
 
-    #UserSearchHandler CloudWatch Alarms.
+    #UserAuthHandler CloudWatch Alarms.
 
     #Alarm to detect execution errors or errors invoking the lambda function
-    UserSearchHandlerInvocationErrorAlarm:
+    UserAuthHandlerInvocationErrorAlarm:
       Type: "AWS::CloudWatch::Alarm"
       Properties:
-        AlarmDescription: "An error occurred while invoking the UserSearchHandler Lambda function."
+        AlarmDescription: "An error occurred while invoking the UserAuthHandler Lambda function."
         AlarmName:
-          UserSearchHandler-${opt:stage, self:provider.stage}-ErrorAlarm
+          UserAuthHandler-${opt:stage, self:provider.stage}-ErrorAlarm
         ComparisonOperator: GreaterThanOrEqualToThreshold
         Dimensions:
           - Name: FunctionName
-            Value: UserSearchHandler-${opt:stage, self:provider.stage}
+            Value: UserAuthHandler-${opt:stage, self:provider.stage}
         EvaluationPeriods: 1
         MetricName: "Errors"
         Namespace: AWS/Lambda
         AlarmActions:
-          - !Ref UserSearchHandlerSNSTopic
+          - !Ref UserAuthHandlerSNSTopic
         OKActions:
-          - !Ref UserSearchHandlerSNSTopic
+          - !Ref UserAuthHandlerSNSTopic
         Period: 300
         Statistic: Sum
         Threshold: 1
         TreatMissingData: notBreaching
 
     #Alarm for excessive invocations of the lambda. SAVE THE MONEY!! Or detect potential attacks
-    UserSearchHandlerInvocationCountAlarm:
+    UserAuthHandlerInvocationCountAlarm:
       Type: "AWS::CloudWatch::Alarm"
       Properties:
         AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
         AlarmName:
-          UserSearchHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+          UserAuthHandler-${opt:stage, self:provider.stage}-InvocationAlarm
         ComparisonOperator: GreaterThanOrEqualToThreshold
         Dimensions:
           - Name: FunctionName
-            Value: UserSearchHandler-${opt:stage, self:provider.stage}
+            Value: UserAuthHandler-${opt:stage, self:provider.stage}
         EvaluationPeriods: 1
         MetricName: "Invocations"
         Namespace: AWS/Lambda
         AlarmActions:
-          - !Ref UserSearchHandlerSNSTopic
+          - !Ref UserAuthHandlerSNSTopic
         OKActions:
-          - !Ref UserSearchHandlerSNSTopic
+          - !Ref UserAuthHandlerSNSTopic
         Period: 300
         Statistic: Sum
         Threshold: 500

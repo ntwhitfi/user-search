@@ -3,6 +3,7 @@ package ntwhitfi.user.search.auth.service;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.amazonaws.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,8 @@ public class UserAuthService implements IUserAuthService {
         AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest()
                 .withAuthParameters(authParams)
                 .withUserPoolId(USER_POOL_ID)
-                .withClientId(CLIENT_ID);
+                .withClientId(CLIENT_ID)
+                .withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH);
 
         try {
             AdminInitiateAuthResult authResult = cognitoIdentityClient.adminInitiateAuth(authRequest);
