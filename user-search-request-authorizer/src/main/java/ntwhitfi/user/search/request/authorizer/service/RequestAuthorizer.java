@@ -24,7 +24,8 @@ public class RequestAuthorizer implements IRequestAuthorizer{
     private static String JWT_SPLIT_PATTERN = "\\.";
     private static int JWT_PAYLOAD_INDEX = 1;
     private static int JWT_PARTS_COUNT = 3;
-    private static String COGNITO_USERNAME_PAYLOAD_KEY = "cognito:username";
+    private static String COGNITO_USERNAME_PAYLOAD_KEY = "username";
+    private static String JWT_ISSUER_KEY = "iss";
 
     @Override
     public AuthResponse validateAuthToken(String authToken) {
@@ -56,7 +57,8 @@ public class RequestAuthorizer implements IRequestAuthorizer{
             //Process the JWT token and check the claims returned. if the token was processed correctly
             try {
                 JWTClaimsSet claimsSet = jwtProcessor.process(jwt, null);
-                return claimsSet.getClaims().containsKey(Constants.COGNITO_JWT_URL);
+                log.debug("JWT Claims Set " + new Gson().toJson(claimsSet.getClaims()));
+                return claimsSet.getClaims().containsKey(JWT_ISSUER_KEY) && claimsSet.getClaims().get(JWT_ISSUER_KEY).equals(Constants.COGNITO_JWT_CLAIM_URL);
             } catch (Exception ex) {
                 log.error("Failed to process auth token. Exception: " + ex.getMessage());
                 return false;

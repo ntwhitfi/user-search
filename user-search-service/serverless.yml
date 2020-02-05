@@ -34,6 +34,16 @@ functions:
       - http:
           path: /user/search
           method: GET
+          cors:
+            origin: ${self:custom.props.corsOrigin}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Apollo-Tracing
           authorizer:
             arn: ${self:custom.props.lambdaAuthorizer}
             identitySource: method.request.header.Authorization

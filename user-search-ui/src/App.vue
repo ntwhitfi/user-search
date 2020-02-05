@@ -2,11 +2,39 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">User Search</router-link>
+      <span v-if="isLoggedIn"> | <a @click="logout">Logout</a></span>
     </div>
     <router-view/>
   </div>
 </template>
 
+<script>
+import Axios from 'axios'
+
+export default {
+  created: function () {
+    Axios.interceptors.response.use(undefined, function (err) {
+      return new Promise(function (resolve, reject) {
+        if (err.response.status === 401) {
+          this.$store.dispatch('logout')
+        }
+        reject(err);
+      });
+    });
+  },
+  computed : {
+    isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
+  },
+  methods: {
+    logout: function () {
+      this.$store.dispatch('logout')
+      .then(() => {
+        this.$router.push('/login')
+      })
+    }
+  },
+}
+</script>
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

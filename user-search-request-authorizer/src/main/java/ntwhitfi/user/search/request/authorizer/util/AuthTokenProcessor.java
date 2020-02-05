@@ -21,7 +21,7 @@ public class AuthTokenProcessor {
         DefaultResourceRetriever resourceRetriever = new DefaultResourceRetriever(2000, 2000);
         URL jwkSetUrl;
         try {
-            jwkSetUrl = new URL(Constants.COGNITO_JWT_URL);
+            jwkSetUrl = new URL(Constants.COGNITO_JWK_URL);
         } catch (MalformedURLException ex) {
             log.error("Invalid format for URL provided. Exception: " + ex.getMessage());
             return null;

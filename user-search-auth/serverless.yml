@@ -42,6 +42,15 @@ functions:
       - http:
           path: /auth
           method: POST
+          cors:
+            origin: ${self:custom.props.corsOrigin}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
           request:
             parameters:
               application/json: ${self:custom.authRequestModel}

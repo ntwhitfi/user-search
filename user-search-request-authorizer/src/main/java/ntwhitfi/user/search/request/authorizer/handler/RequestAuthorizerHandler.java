@@ -12,6 +12,10 @@ import ntwhitfi.user.search.request.authorizer.model.AuthRequest;
 import ntwhitfi.user.search.request.authorizer.model.AuthResponse;
 import ntwhitfi.user.search.request.authorizer.service.IRequestAuthorizer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Slf4j
 public class RequestAuthorizerHandler implements RequestHandler<AuthRequest, AuthPolicy> {
     private static String METHOD_ARN_SPLIT_PATTERN = ":";
@@ -67,22 +71,42 @@ public class RequestAuthorizerHandler implements RequestHandler<AuthRequest, Aut
     //generate the auth policy to return for the token provided
     private AuthPolicy generateAuthPolicy(AuthRequest authRequest, String effect, String principalId) {
         //Get the ARN from the API Gateway request for the method being invoked
+        //Example method ARN: "arn:aws:execute-api:<region>:<accountId>:<restApiId>/<apiStage>/<HTTPMethod>/<urlPath[0]>/<urlPath[n]>"
         String methodArn = authRequest.getMethodArn();
 
         //Split the ARN from the request to get the parts required for the auth policy generation
         String[] arnPartials = methodArn.split(METHOD_ARN_SPLIT_PATTERN);
         String region = arnPartials[3];
         String awsAccountId = arnPartials[4];
-        String[] apiGatewayArnPartials = arnPartials[5].split(API_ARN_PARTIAL_SPLIT_PATTERN);
-        String restApiId = apiGatewayArnPartials[0];
-        String apiGatewayStage = apiGatewayArnPartials[1];
-        String httpMethod = apiGatewayArnPartials[2];
+
+        //Get API gateway parts from method arn.
+        //Example API Gateway parts: <restApiId>/<apiStage>/<HTTPMethod>/<urlPath[0]>/<urlPath[n]>
+        List<String> apiGatewayArnPartials = new ArrayList<>();
+        Collections.addAll(apiGatewayArnPartials, arnPartials[5].split(API_ARN_PARTIAL_SPLIT_PATTERN));
+
+        String restApiId = apiGatewayArnPartials.get(0);
+        String apiGatewayStage = apiGatewayArnPartials.get(1);
+        String httpMethod = apiGatewayArnPartials.get(2);
         String resource = ""; // root resource
 
         //Resource is not required in the request, if one was provided, override the root resource
-        if (apiGatewayArnPartials.length == 4) {
-            resource = apiGatewayArnPartials[3];
+        if (apiGatewayArnPartials.size() > 3) {
+            log.info("getting resource path");
+            StringBuilder resourceBuilder = new StringBuilder();
+            for (String apiUrlPart : apiGatewayArnPartials.subList(3, apiGatewayArnPartials.size())) {
+                if(resourceBuilder.toString().equals("")) {
+                    resourceBuilder.append(apiUrlPart);
+                } else {
+                    resourceBuilder.append("/");
+                    resourceBuilder.append(apiUrlPart);
+                }
+            }
+
+            resource = resourceBuilder.toString();
         }
+
+
+        log.info("Resource path being accessed " + resource);
 
         log.info("Attempting to create auth policy document for methodArn " + methodArn);
         //Create new PolicyDocument with empty allow and deny statements
@@ -96,6 +120,9 @@ public class RequestAuthorizerHandler implements RequestHandler<AuthRequest, Aut
             policyDoc.denyMethod(AuthPolicy.HttpMethod.valueOf(httpMethod), resource);
         }
 
-        return new AuthPolicy(principalId, policyDoc);
+        log.info("Auth policy document: " + gson.toJson(policyDoc));
+        AuthPolicy authPolicy = new AuthPolicy(principalId, policyDoc);
+        log.info("Auth policy being returned: " + gson.toJson(authPolicy));
+        return authPolicy;
     }
 }

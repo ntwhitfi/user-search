@@ -36,3 +36,5 @@ tags:
 
 cognitoUserPoolId: us-east-1_6RJhZOwDs
 cognitoClientId: 46bmqhjchc7r41jr2g39hu5naf
+
+corsOrigin: "*"
