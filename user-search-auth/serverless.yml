@@ -37,7 +37,7 @@ functions:
     name: UserAuthHandler-${opt:stage, self:provider.stage}
     environment:
       USER_POOL_ID: ${self:custom.props.cognitoUserPoolId}
-      CLIENT_ID: ${self:custom.props.cognitoClientId}
+      CLIENT_ID: ${ssm:UserSearchAuthClientId~true}
     events:
       - http:
           path: /auth
