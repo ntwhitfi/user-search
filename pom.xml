@@ -12,6 +12,8 @@
         <module>user-search-service</module>
         <module>user-search-common</module>
         <module>user-search-etl</module>
+        <module>user-search-auth</module>
+        <module>user-search-request-authorizer</module>
     </modules>
 
     <build>

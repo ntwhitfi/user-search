@@ -17,3 +17,13 @@ roleToDepartmentMap: '{
 }'
 
 userETLStartCommand: start
+
+sns:
+  endpoint: nate63x2@gmail.com
+  protocol: email
+
+tags:
+  - Key: app
+    Value: UserSearch
+  - Key: gitRepo
+    Value: user-search

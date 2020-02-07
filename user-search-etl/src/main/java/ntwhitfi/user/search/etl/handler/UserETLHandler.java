@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import ntwhitfi.user.search.common.model.UserRecord;
 import ntwhitfi.user.search.etl.IUserETLService;
-import ntwhitfi.user.search.etl.UserETLService;
 import ntwhitfi.user.search.etl.config.DaggerUserETLComponent;
 import ntwhitfi.user.search.etl.config.UserETLComponent;
 import ntwhitfi.user.search.etl.model.HRUserRecord;
@@ -14,8 +13,6 @@ import ntwhitfi.user.search.etl.model.UserETLRequest;
 import ntwhitfi.user.search.etl.model.UserETLResponse;
 
 import java.util.List;
-
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 @Slf4j
 public class UserETLHandler implements RequestHandler<UserETLRequest, UserETLResponse> {

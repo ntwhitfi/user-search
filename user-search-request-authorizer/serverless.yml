@@ -1,0 +1,123 @@
+app: user-search
+
+service:
+  name: user-search-request-authorizer
+  description: |
+    This service is used to authorize users to access the user search APIs
+
+frameworkVersion: ">=1.9.0 <2.0.0"
+
+custom:
+  props: ${file(env_config/${opt:stage, self:provider.stage}.yml)}
+
+package:
+  artifact: ${self:custom.props.artifactPath}
+
+provider:
+  name: aws
+  runtime: java8
+  stage: dev
+  region: ${self:custom.props.region}
+  memorySize: ${self:custom.props.memorySize}
+  timeout: ${self:custom.props.timeout}
+  deploymentBucket: ${self:custom.props.deploymentBucketName}
+  role: ${self:custom.props.lambdaRole}
+
+functions:
+  RequestAuthorizerHandler:
+    handler: ntwhitfi.user.search.request.authorizer.handler.RequestAuthorizerHandler
+    name: RequestAuthorizerHandler-${opt:stage, self:provider.stage}
+    environment:
+      USER_POOL_ID: ${self:custom.props.cognitoUserPoolId}
+      REGION: ${self:custom.props.region}
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    #Create SNS topic to handle sending the CloudWatch alarms
+    RequestAuthorizerHandlerSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: RequestAuthorizerSNSTopic-${opt:stage, self:provider.stage}
+        Subscription:
+          - Endpoint: ${self:custom.props.sns.endpoint}
+            Protocol: ${self:custom.props.sns.protocol}
+        Tags: ${self:custom.props.tags}
+        TopicName: RequestAuthorizerSNSTopic-${opt:stage, self:provider.stage}
+
+    #RequestAuthorizerHandler CloudWatch Alarms.
+
+    #Alarm to detect execution errors or errors invoking the lambda function
+    RequestAuthorizerHandlerInvocationErrorAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "An error occurred while invoking the RequestAuthorizerHandler Lambda function."
+        AlarmName:
+          RequestAuthorizerHandler-${opt:stage, self:provider.stage}-ErrorAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: RequestAuthorizerHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Errors"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref RequestAuthorizerHandlerSNSTopic
+        OKActions:
+          - !Ref RequestAuthorizerHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    #Alarm for excessive invocations of the lambda. SAVE THE MONEY!! Or detect potential attacks
+    RequestAuthorizerHandlerInvocationCountAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
+        AlarmName:
+          RequestAuthorizerHandler-${opt:stage, self:provider.stage}-InvocationCountAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        Dimensions:
+          - Name: FunctionName
+            Value: RequestAuthorizerHandler-${opt:stage, self:provider.stage}
+        EvaluationPeriods: 1
+        MetricName: "Invocations"
+        Namespace: AWS/Lambda
+        AlarmActions:
+          - !Ref RequestAuthorizerHandlerSNSTopic
+        OKActions:
+          - !Ref RequestAuthorizerHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 500
+        TreatMissingData: notBreaching
+
+  RequestAuthorizerHandlerMetricFilter:
+    Type: "AWS::Logs::MetricFilter"
+    DependsOn: RequestAuthorizerHandlerLambdaFunction
+    Properties:
+      LogGroupName: "/aws/lambda/RequestAuthorizerHandler-${opt:stage, self:provider.stage}"
+      FilterPattern: "ERROR Exception"
+      MetricTransformations:
+        - MetricName: Errors-${opt:stage, self:provider.stage}
+          MetricNamespace: UserSearch/RequestAuthorizer
+          MetricValue: 1
+
+  RequestAuthorizerHandlerMetricFilterAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmDescription: "The RequestAuthorizerHandler lambda metric filter has caught an error."
+      AlarmName:
+        RequestAuthorizerHandler-${opt:stage, self:provider.stage}-MetricFilterAlarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      MetricName: Errors-${opt:stage, self:provider.stage}
+      Namespace: UserSearch/RequestAuthorizer
+      AlarmActions:
+        - !Ref RequestAuthorizerHandlerSNSTopic
+      OKActions:
+        - !Ref RequestAuthorizerHandlerSNSTopic
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching

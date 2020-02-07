@@ -1,0 +1,39 @@
+authRequestModel:
+  '{
+    "title": "authRequest",
+    "type": "object",
+    "properties": {
+      "username": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      }
+    }
+  }'
+
+region: us-east-1
+
+artifactPath: target/user-search-auth-1.0-SNAPSHOT.jar
+
+memorySize: 256
+
+timeout: 30
+
+deploymentBucketName: ntwhitfi-serverless-deployment-bucket
+
+lambdaRole: arn:aws:iam::380986832728:role/UserAuthRole-dev
+
+sns:
+  endpoint: nate63x2@gmail.com
+  protocol: email
+
+tags:
+  - Key: app
+    Value: UserAuth
+  - Key: gitRepo
+    Value: user-search
+
+cognitoUserPoolId: us-east-1_6RJhZOwDs
+
+corsOrigin: "*"

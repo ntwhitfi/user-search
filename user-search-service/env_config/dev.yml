@@ -13,3 +13,17 @@ timeout: 30
 deploymentBucketName: ntwhitfi-serverless-deployment-bucket
 
 lambdaRole: arn:aws:iam::380986832728:role/UserSearchRole-dev
+
+sns:
+  endpoint: nate63x2@gmail.com
+  protocol: email
+
+tags:
+  - Key: app
+    Value: UserSearch
+  - Key: gitRepo
+    Value: user-search
+
+lambdaAuthorizer: arn:aws:lambda:us-east-1:380986832728:function:RequestAuthorizerHandler-dev
+
+corsOrigin: "*"
