@@ -81,7 +81,7 @@ resources:
       Properties:
         AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
         AlarmName:
-          UserETLHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+          UserETLHandler-${opt:stage, self:provider.stage}-InvocationCountAlarm
         ComparisonOperator: GreaterThanOrEqualToThreshold
         Dimensions:
           - Name: FunctionName
@@ -96,4 +96,34 @@ resources:
         Period: 300
         Statistic: Sum
         Threshold: 500
+        TreatMissingData: notBreaching
+
+    UserETLHandlerMetricFilter:
+      Type: "AWS::Logs::MetricFilter"
+      DependsOn: UserETLHandlerLambdaFunction
+      Properties:
+        LogGroupName: "/aws/lambda/UserETLHandler-${opt:stage, self:provider.stage}"
+        FilterPattern: "ERROR Exception"
+        MetricTransformations:
+          - MetricName: Errors-${opt:stage, self:provider.stage}
+            MetricNamespace: UserSearch/UserETL
+            MetricValue: 1
+
+    UserETLHandlerMetricFilterAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "The UserETLHandler lambda metric filter has caught an error."
+        AlarmName:
+          UserETLHandler-${opt:stage, self:provider.stage}-MetricFilterAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        EvaluationPeriods: 1
+        MetricName: Errors-${opt:stage, self:provider.stage}
+        Namespace: UserSearch/UserETL
+        AlarmActions:
+          - !Ref UserETLHandlerSNSTopic
+        OKActions:
+          - !Ref UserETLHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 1
         TreatMissingData: notBreaching

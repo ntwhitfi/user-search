@@ -75,7 +75,7 @@ resources: # CloudFormation template syntax from here on.
       Properties:
         AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
         AlarmName:
-          RequestAuthorizerHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+          RequestAuthorizerHandler-${opt:stage, self:provider.stage}-InvocationCountAlarm
         ComparisonOperator: GreaterThanOrEqualToThreshold
         Dimensions:
           - Name: FunctionName
@@ -91,3 +91,33 @@ resources: # CloudFormation template syntax from here on.
         Statistic: Sum
         Threshold: 500
         TreatMissingData: notBreaching
+
+  RequestAuthorizerHandlerMetricFilter:
+    Type: "AWS::Logs::MetricFilter"
+    DependsOn: RequestAuthorizerHandlerLambdaFunction
+    Properties:
+      LogGroupName: "/aws/lambda/RequestAuthorizerHandler-${opt:stage, self:provider.stage}"
+      FilterPattern: "ERROR Exception"
+      MetricTransformations:
+        - MetricName: Errors-${opt:stage, self:provider.stage}
+          MetricNamespace: UserSearch/RequestAuthorizer
+          MetricValue: 1
+
+  RequestAuthorizerHandlerMetricFilterAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmDescription: "The RequestAuthorizerHandler lambda metric filter has caught an error."
+      AlarmName:
+        RequestAuthorizerHandler-${opt:stage, self:provider.stage}-MetricFilterAlarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      MetricName: Errors-${opt:stage, self:provider.stage}
+      Namespace: UserSearch/RequestAuthorizer
+      AlarmActions:
+        - !Ref RequestAuthorizerHandlerSNSTopic
+      OKActions:
+        - !Ref RequestAuthorizerHandlerSNSTopic
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching

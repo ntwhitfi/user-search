@@ -113,7 +113,7 @@ resources: # CloudFormation template syntax from here on.
       Properties:
         AlarmDescription: "Too many invocations have happened for this lambda function in a short period of time."
         AlarmName:
-          UserSearchHandler-${opt:stage, self:provider.stage}-InvocationAlarm
+          UserSearchHandler-${opt:stage, self:provider.stage}-InvocationCountAlarm
         ComparisonOperator: GreaterThanOrEqualToThreshold
         Dimensions:
           - Name: FunctionName
@@ -128,4 +128,34 @@ resources: # CloudFormation template syntax from here on.
         Period: 300
         Statistic: Sum
         Threshold: 500
+        TreatMissingData: notBreaching
+
+    UserSearchHandlerMetricFilter:
+      Type: "AWS::Logs::MetricFilter"
+      DependsOn: UserSearchHandlerLambdaFunction
+      Properties:
+        LogGroupName: "/aws/lambda/UserSearchHandler-${opt:stage, self:provider.stage}"
+        FilterPattern: "ERROR Exception"
+        MetricTransformations:
+          - MetricName: Errors-${opt:stage, self:provider.stage}
+            MetricNamespace: UserSearch/UserSearch
+            MetricValue: 1
+
+    UserSearchHandlerMetricFilterAlarm:
+      Type: "AWS::CloudWatch::Alarm"
+      Properties:
+        AlarmDescription: "The UserSearchHandler lambda metric filter has caught an error."
+        AlarmName:
+          UserSearchHandler-${opt:stage, self:provider.stage}-MetricFilterAlarm
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        EvaluationPeriods: 1
+        MetricName: LambdaErrors-${opt:stage, self:provider.stage}
+        Namespace: UserSearch/UserSearch
+        AlarmActions:
+          - !Ref UserSearchHandlerSNSTopic
+        OKActions:
+          - !Ref UserSearchHandlerSNSTopic
+        Period: 300
+        Statistic: Sum
+        Threshold: 1
         TreatMissingData: notBreaching
