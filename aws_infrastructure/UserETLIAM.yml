@@ -1,12 +1,10 @@
-AWSTemplateFormatVersion: '2010-09-09'
-
+AWSTemplateFormatVersion: '2010-09-09' #Version specified by AWS
 Description: Creates the IAM Role for the User ETL Service Lambda.
-
 Parameters:
-  Author:
-    Description: Author's name
-    Type: String
-    Default: ntwhitfi
+  Author: # Logical ID for the parameter. Used for reference in the template
+    Description: Author's name # A description for the parameter, what are we filling out?
+    Type: String # The type of parameter. String, number, boolean, etc.
+    Default: ntwhitfi # default valued assigned to the parameter if one is not provided
     MinLength: 3
     MaxLength: 30
   HRUserDynamoDBTableName:
@@ -21,36 +19,57 @@ Parameters:
     Description: dev, stg, prod, etc...
     Type: String
     Default: dev
-    MinLength: 2
-    MaxLength: 30
+    AllowedValues: # Set the values that can be selected for this parameter. No other values will be accepted
+      - dev
+      - qa
+      - prd
 
 Resources:
-  TicketingSystemAuthRole:
+  # logical ID for the resource. Used to reference it within the template
+  UserSearchETLRole:
+    # The type of AWS resource being created. noted By AWS::<Resource Category>::<Resource>
     Type: AWS::IAM::Role
+    # Properties used to define the resource being created. These will be specific to the resource type
     Properties:
+      # !Join used to combine values. in this case, '' is defined as the joining character. if this was '-', the parts would be joined with a '-' between them.
+      # !Ref is used to reference the value of a Logical ID in the template. The returned value from a !Ref depends on the type of resource (including parameters) being referenced
       RoleName: !Join [ '', [ 'UserETLRole-', !Ref Environment ] ]
+      # Used to assign a custom or AWS managed policy to an IAM role.
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      # Defines which services/resources are allowed to assume this IAM role
       AssumeRolePolicyDocument:
+        # AWS Specified version
         Version: '2012-10-17'
+        # List of policy statements defining which resources can and explicitly cannot assume the role
         Statement:
           - Effect: Allow
+            # defines the principal that is allowed to assume the role. Can be AWS Account ID, service, IAM role, or resource.
             Principal:
               Service:
                 - lambda.amazonaws.com
+            # action granted to the principal. In this case, allowing the lambda service to assume this role
             Action:
               - sts:AssumeRole
+      # List of inline policies defined to the IAM role. This is what gives the IAM role access to resources
       Policies:
         - PolicyName: UserSearchDynamoDBPolicy
+          # Defines the what actions the role can execute on different resources.
           PolicyDocument:
             Version: '2012-10-17'
+            # List of policy statements defining what actions the role can execute on different resources.
             Statement:
               - Effect: Allow
+                # the actions that can be performed
                 Action:
                   - dynamodb:BatchGetItem
                   - dynamodb:GetItem
                   - dynamodb:GetRecords
                   - dynamodb:Scan
+                # !Sub is used to substitute values from referencing Logical IDs in the template. Logical IDs to substitute in are denoted by ${LogicalId}
+                # The value returned for the Logical ID is the same as the value returned by a !Ref action
+                # Note that there are Psudo-Parameters in use such as ${AWS::AccountId}.
+                # See here for info on these parameter types: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
                 Resource: !Sub "arn:aws:dynamodb:us-east-1:${AWS::AccountId}:table/${HRUserDynamoDBTableName}"
               - Effect: Allow
                 Action:

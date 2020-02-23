@@ -1,43 +1,57 @@
-app: user-search
+app: user-search # can be used to relate multiple services together. name for app
 
-service:
-  name: user-search-etl
+service: # defines the name and deployment package for the function being deployed
+  name: user-search-etl # name given to the service, stack created, and package file uploaded to deployment bucket
   description: |
     This service is used to transform and push records to the user search table
 
-frameworkVersion: ">=1.9.0 <2.0.0"
+frameworkVersion: ">=1.9.0 <2.0.0" # specify version for Serverless Framework
 
-custom:
+custom: # Specify custom values to reference in the template
+  # props will be a value defined to take the values from the environment files located in the env_config folder
+  # self: references the template itself and can be used to reference attributes from the template
+  # opt: references options sent via the deployment command when deploying the template. Ex: sls deploy --stage dev. --stage value is reference by opt
   props: ${file(env_config/${opt:stage, self:provider.stage}.yml)}
 
-package:
+package: # specify package details. What files are being deployed for our function
   artifact: ${self:custom.props.artifactPath}
 
+# specify the provider for the template. AWS, azure, gcp, etc.
+# this will change some of the attributes that are allowed for the template to match the required cloud platform spec
 provider:
   name: aws
-  runtime: java8
-  stage: dev
-  region: ${self:custom.props.region}
-  memorySize: ${self:custom.props.memorySize}
-  timeout: ${self:custom.props.timeout}
-  deploymentBucket: ${self:custom.props.deploymentBucketName}
-  role: ${self:custom.props.lambdaRole}
+  runtime: java8 # runtime for the lambda function
+  stage: dev # stage is equivalent to environment
+  region: ${self:custom.props.region} # region in AWS to deploy to
+  memorySize: ${self:custom.props.memorySize} # memory allocated to function
+  timeout: ${self:custom.props.timeout} # max timeout for function execution
+  deploymentBucket: ${self:custom.props.deploymentBucketName} # where to deploy the packaged function files (JAR file)
+  role: ${self:custom.props.lambdaRole} # The AWS IAM role that this function will assume during execution
 
+# defines the functions that will be deployed to AWS Lambda
 functions:
+  # Logical ID. Follows Serverless Framework naming spec and transformations detailed here:https://serverless.com/framework/docs/providers/aws/guide/resources#aws-cloudformation-resource-reference
   UserETLHandler:
-    handler: ntwhitfi.user.search.etl.handler.UserETLHandler
-    name: UserETLHandler-${opt:stage, self:provider.stage}
-    environment:
+    handler: ntwhitfi.user.search.etl.handler.UserETLHandler # package path to class used as the lambda function handler
+    name: UserETLHandler-${opt:stage, self:provider.stage} # name given to the lambda function
+    environment: # environment variables for the lambda function
       ROLE_TO_DEPARTMENT_MAP: ${self:custom.props.roleToDepartmentMap}
       USER_ETL_START_COMMAND: ${self:custom.props.userETLStartCommand}
+    # events can be multiple different trigger types for the lambda function such as CloudWatch, DynamoDB Stream, API Gateway, SQS and more
     events:
+      # defines a CloudWatch rule to trigger the lambda function.
+      # Serverless Framework will take care of adding lambda resource permissions so that the CloudWatch rule can trigger the Lambda function
       - schedule:
-          rate: rate(24 hours)
-          enabled: true
-          input:
-            command: start
-            
+          rate: rate(24 hours) # define schedule rate for the rule
+          enabled: true # enable the rule
+          input: # specify object as input value for the lambda function handler
+            command: start # translates to {"command": "start"} as input object for lambda handler
+
+# the resources section is used to define resources that cannot be defined by serverless framework specification
+# these resources will be defined using the template spec provided by the cloud platform specified in the provider section
+# in this case the provider is aws so the resources are defined using CloudFormation
 resources:
+  # AWS CloudFormation spec from here
   Resources:
     #Create SNS topic to handle sending the CloudWatch alarms
     UserETLHandlerSNSTopic:
