@@ -20,7 +20,7 @@ package: # specify package details. What files are being deployed for our functi
 # this will change some of the attributes that are allowed for the template to match the required cloud platform spec
 provider:
   name: aws
-  runtime: java8 # runtime for the lambda function
+  runtime: java11 # runtime for the lambda function
   stage: dev # stage is equivalent to environment
   region: ${self:custom.props.region} # region in AWS to deploy to
   memorySize: ${self:custom.props.memorySize} # memory allocated to function
