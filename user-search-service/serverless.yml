@@ -62,7 +62,7 @@ resources: # CloudFormation template syntax from here on.
     userSearchTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: UserSearchTable
+        TableName: UserSearchTable-${opt:stage, self:provider.stage}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id

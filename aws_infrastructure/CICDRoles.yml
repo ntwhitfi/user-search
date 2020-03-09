@@ -209,8 +209,48 @@ Resources:
                 Action:
                   - iam:ListRoles
                   - iam:PassRole
+                  - iam:AddRoleToInstanceProfile
+                  - iam:AttachRolePolicy
+                  - iam:CreateInstanceProfile
+                  - iam:CreatePolicy
+                  - iam:CreatePolicyVersion
+                  - iam:CreateRole
+                  - iam:CreateServiceLinkedRole
+                  - iam:DeleteGroupPolicy
+                  - iam:DeleteInstanceProfile
+                  - iam:DeletePolicy
+                  - iam:DeletePolicyVersion
+                  - iam:DeleteRole
+                  - iam:DeleteRolePermissionsBoundary
+                  - iam:DeleteRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:GetInstanceProfile
+                  - iam:GetPolicy
+                  - iam:GetPolicyVersion
+                  - iam:GetRole
+                  - iam:GetRolePolicy
+                  - iam:GetServiceLinkedRoleDeletionStatus
+                  - iam:ListAttachedRolePolicies
+                  - iam:ListEntitiesForPolicy
+                  - iam:ListInstanceProfiles
+                  - iam:ListInstanceProfilesForRole
+                  - iam:ListPolicies
+                  - iam:ListPoliciesGrantingServiceAccess
+                  - iam:ListPolicyVersions
+                  - iam:ListRolePolicies
+                  - iam:ListRoleTags
+                  - iam:ListRoles
+                  - iam:PutRolePermissionsBoundary
+                  - iam:PutRolePolicy
+                  - iam:PutUserPermissionsBoundary
+                  - iam:RemoveRoleFromInstanceProfile
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:UpdateRole
+                  - iam:UpdateRoleDescription
                 Resource:
                   - !Sub "arn:aws:iam::${AWS::AccountId}:role/User*"
+
         - PolicyName: UserSearchCodeBuildCloudFrontPolicy
           PolicyDocument:
             Version: '2012-10-17'

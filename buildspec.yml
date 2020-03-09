@@ -17,7 +17,13 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Deploying CloudFormation stacks
-      - cd user-search-auth
+      - cd aws_infrastructure
+      # deploy the IAM roles
+      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT}
+      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT}
+      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT}
+      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT}
+      - cd ../user-search-auth
       - serverless -v --stage $ENVIRONMENT deploy
       - cd ../user-search-etl
       - serverless -v --stage $ENVIRONMENT deploy
