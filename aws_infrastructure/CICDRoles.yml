@@ -126,6 +126,24 @@ Resources:
                   - cloudformation:List*
                   - cloudformation:Describe*
                 Resource: "*"
+        - PolicyName: UserSearchCodeBuildDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:CreateTable
+                  - dynamodb:DeleteTable
+                  - dynamodb:DescribeLimits
+                  - dynamodb:DescribeReservedCapacity
+                  - dynamodb:DescribeReservedCapacityOfferings
+                  - dynamodb:DescribeStream
+                  - dynamodb:DescribeTable
+                  - dynamodb:ListStreams
+                  - dynamodb:ListTables
+                  - dynamodb:UpdateTable
+                Resource:
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserSearchTable*"
         - PolicyName: UserSearchCodeBuildServerlessPolicy
           PolicyDocument:
             Version: '2012-10-17'

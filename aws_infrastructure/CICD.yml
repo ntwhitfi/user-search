@@ -50,14 +50,22 @@ Parameters:
     Description: OAuth token used to connect to the GitHub repository for the CodePipeline execution
     Type: String
     NoEcho: true
-  UserSearchUIS3Bucket:
+  UserSearchUIS3BucketDev:
     Description: The S3 bucket to deploy the UI files to
     Type: String
     Default: ntwhitfi-user-search-ui
-  UserSearchCloudFrontDistributionId:
+  UserSearchUIS3BucketQa:
+    Description: The S3 bucket to deploy the UI files to
+    Type: String
+    Default: ntwhitfi-user-search-ui-qa
+  UserSearchCloudFrontDistributionIdDev:
     Description: The CloudFront distribution id for the User Search application
     Type: String
     Default: E1L7HSVT5D0Z2A
+  UserSearchCloudFrontDistributionIdQa:
+    Description: The CloudFront distribution id for the User Search application
+    Type: String
+    Default: E1HH2SX3ZDMZTX
 Resources:
   UserSearchCodeBuildDev:
     Type: AWS::CodeBuild::Project
@@ -74,9 +82,9 @@ Resources:
           - Name: ENVIRONMENT
             Value: dev
           - Name: BUCKET_NAME
-            Value: !Ref UserSearchUIS3Bucket
+            Value: !Ref UserSearchUIS3BucketDev
           - Name: CLOUDFRONT_DISTRIBUTION_ID
-            Value: !Ref UserSearchCloudFrontDistributionId
+            Value: !Ref UserSearchCloudFrontDistributionIdDev
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecDevFile
@@ -96,9 +104,11 @@ Resources:
           - Name: ENVIRONMENT
             Value: qa
           - Name: BUCKET_NAME
-            Value: !Ref UserSearchUIS3Bucket
+            Value: !Ref UserSearchUIS3BucketQa
           - Name: CLOUDFRONT_DISTRIBUTION_ID
-            Value: !Ref UserSearchCloudFrontDistributionId
+            Value: !Ref UserSearchCloudFrontDistributionIdQa
+          - Name: USER_POOL_ID
+            Value: us-east-1_6RJhZOwDs
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecDeployFile
