@@ -16,7 +16,7 @@ Parameters:
     Type: String
     Default: UserSearchTable
   Environment:
-    Description: dev, stg, prod, etc...
+    Description: dev, qa, prd, etc...
     Type: String
     Default: dev
     AllowedValues: # Set the values that can be selected for this parameter. No other values will be accepted
