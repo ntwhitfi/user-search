@@ -14,10 +14,10 @@ phases:
       - echo Deploying CloudFormation stacks
       - cd aws_infrastructure
       # Deploy the IAM roles
-      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --parameter-overrides Environment=${ENVIRONMENT} UserPoolId=${USER_POOL_ID}
-      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --parameter-overrides UserSearchDynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT}
-      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --parameter-overrides UserPoolId=${USER_POOL_ID} Environment=${ENVIRONMENT}
-      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --parameter-overrides DynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT}
+      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --parameter-overrides Environment=${ENVIRONMENT} UserPoolId=${USER_POOL_ID} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --parameter-overrides UserSearchDynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --parameter-overrides UserPoolId=${USER_POOL_ID} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --parameter-overrides DynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
       - cd ../user-search-auth
       - serverless -v --stage $ENVIRONMENT deploy
       - cd ../user-search-etl
