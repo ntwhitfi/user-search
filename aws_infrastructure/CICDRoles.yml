@@ -97,7 +97,9 @@ Resources:
                   - cloudformation:CreateStack
                   - cloudformation:CreateUploadBucket
                   - cloudformation:DeleteStack
+                  - cloudformation:ExecuteChangeSet
                   - cloudformation:GetStackPolicy
+                  - cloudformation:GetTemplateSummary
                   - cloudformation:SetStackPolicy
                   - cloudformation:UpdateStack
                   - cloudformation:UpdateStackSet
