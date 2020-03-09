@@ -304,6 +304,7 @@ Resources:
                   - sns:GetPlatformApplicationAttributes
                   - sns:RemovePermission
                   - sns:TagResource
+                  - sns:Subscribe
                 Resource: "*"
         - PolicyName: UserSearchCodeBuildCloudWatchPolicy
           PolicyDocument:
@@ -332,6 +333,7 @@ Resources:
                   - logs:DeleteResourcePolicy
                   - logs:DeleteRetentionPolicy
                   - logs:DeleteSubscriptionFilter
+                  - logs:PutMetricFilter
                   - logs:TagLogGroup
                 Resource: "*"
               - Effect: Allow

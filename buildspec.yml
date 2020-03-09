@@ -32,8 +32,8 @@ phases:
       - cd ../user-search-service
       - serverless -v --stage $ENVIRONMENT deploy
       - cd ../user-search-ui
-      - chmod +x deploy.sh
-      - ./deploy.sh
+      - chmod +x build.sh
+      - ./build.sh
 artifacts:
   files:
     - '**/*'
