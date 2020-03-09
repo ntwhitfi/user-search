@@ -19,10 +19,10 @@ phases:
       - echo Deploying CloudFormation stacks
       - cd aws_infrastructure
       # deploy the IAM roles
-      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
-      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
-      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
-      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation update-stack --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation update-stack --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation update-stack --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation update-stack --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM
       - cd ../user-search-auth
       - serverless -v --stage $ENVIRONMENT deploy
       - cd ../user-search-etl
