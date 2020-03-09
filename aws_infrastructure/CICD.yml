@@ -104,6 +104,21 @@ Resources:
         BuildSpec: !Ref BuildSpecDeployFile
       TimeoutInMinutes: !Ref Timeout
 
+  UserSearchCodePipelineWebHook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubOAuthToken
+      Filters:
+        - JsonPath: "$.ref"
+          MatchEquals: refs/heads/{Branch}
+      Authentication: GITHUB_HMAC
+      TargetPipeline: !Ref UserSearchCodePipeline
+      TargetAction: Source
+      Name: UserSearchAppWebhook
+      TargetPipelineVersion: !GetAtt UserSearchCodePipeline.Version
+      RegisterWithThirdParty: 'true'
+
   UserSearchCodePipeline:
     Type: "AWS::CodePipeline::Pipeline"
     Properties:
