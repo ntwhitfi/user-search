@@ -93,19 +93,14 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - cloudformation:List*
-                  - cloudformation:Describe*
                   - cloudformation:CreateStack
                   - cloudformation:CreateUploadBucket
                   - cloudformation:DeleteStack
                   - cloudformation:GetStackPolicy
                   - cloudformation:SetStackPolicy
-                  - cloudformation:TagResource
-                  - cloudformation:UntagResource
                   - cloudformation:UpdateStack
                   - cloudformation:UpdateStackSet
                   - cloudformation:UpdateTerminationProtection
-                  - cloudformation:ValidateTemplate
                 Resource:
                   - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserSearch*"
                   - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Search*"
@@ -116,6 +111,65 @@ Resources:
                   - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserRequest*"
                   - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-request*"
                   - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Request*"
+        - PolicyName: UserSearchCodeBuildCloudFormationAllPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:ValidateTemplate
+                  - cloudformation:TagResource
+                  - cloudformation:UntagResource
+                  - cloudformation:List*
+                  - cloudformation:Describe*
+                Resource: "*"
+        - PolicyName: UserSearchCodeBuildServerlessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - apigateway:PATCH
+                  - apigateway:GET
+                  - apigateway:POST
+                  - apigateway:PUT
+                  - apigateway:HEAD
+                  - apigateway:OPTIONS
+                  - apigateway:DELETE
+                  - apigateway:UpdateRestApiPolicy
+                  - lambda:AddLayerVersionPermission
+                  - lambda:AddPermission
+                  - lambda:CreateAlias
+                  - lambda:CreateEventSourceMapping
+                  - lambda:CreateFunction
+                  - lambda:DeleteAlias
+                  - lambda:DeleteEventSourceMapping
+                  - lambda:DeleteFunction
+                  - lambda:DeleteFunctionConcurrency
+                  - lambda:DeleteFunctionEventInvokeConfig
+                  - lambda:DeleteLayerVersion
+                  - lambda:DeleteProvisionedConcurrencyConfig
+                  - lambda:InvokeAsync
+                  - lambda:InvokeFunction
+                  - lambda:PublishLayerVersion
+                  - lambda:PublishVersion
+                  - lambda:PutFunctionConcurrency
+                  - lambda:PutFunctionEventInvokeConfig
+                  - lambda:PutProvisionedConcurrencyConfig
+                  - lambda:RemoveLayerVersionPermission
+                  - lambda:RemovePermission
+                  - lambda:Update*
+                Resource:
+                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserSearchHandler-*"
+                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserETLHandler-*"
+                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserAuthHandler-*"
+                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:RequestAuthorizerHandler-*"
+                  - !Sub "arn:aws:apigateway:${AWS::Region}::/restapis*"
+              - Effect: Allow
+                Action:
+                  - lambda:Get*
+                  - lambda:List*
+                Resource: "*"
         - PolicyName: UserSearchCodeBuildS3Policy
           PolicyDocument:
             Version: '2012-10-17'
@@ -134,6 +188,29 @@ Resources:
                 Resource:
                   - !Sub "arn:aws:s3:::ntwhitfi*"
                   - !Sub "arn:aws:s3:::ntwhitfi*/*"
+        - PolicyName: UserSearchCodeBuildSSMPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:DescribeParameters
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                  - ssm:PutParameter
+                Resource:
+                  - "*"
+        - PolicyName: UserSearchCICDIAMPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:ListRoles
+                  - iam:PassRole
+                Resource:
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:role/User*"
         - PolicyName: UserSearchCodeBuildCloudFrontPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -187,6 +264,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:Describe*
                   - logs:List*
+                  - logs:PutLogEvents
                   - logs:DeleteLogGroup
                   - logs:DeleteLogStream
                   - logs:DeleteMetricFilter
