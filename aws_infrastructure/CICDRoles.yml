@@ -33,6 +33,18 @@ Resources:
                   - codepipeline:EnableStageTransition
                   - codepipeline:DisableStageTransition
                 Resource: !Sub "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:UserSearch*"
+        - PolicyName: UserSearchCICDCodeBuildPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:GetResourcePolicy
+                  - codebuild:ImportSourceCredentials
+                  - codebuild:InvalidateProjectCache
+                  - codebuild:StartBuild
+                  - codebuild:StopBuild
+                Resource: !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/user-search*"
         - PolicyName: UserSearchCICDS3Policy
           PolicyDocument:
             Version: '2012-10-17'
