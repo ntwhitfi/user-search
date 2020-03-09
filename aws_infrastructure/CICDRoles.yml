@@ -93,6 +93,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - cloudformation:CreateChangeSet
                   - cloudformation:CreateStack
                   - cloudformation:CreateUploadBucket
                   - cloudformation:DeleteStack
