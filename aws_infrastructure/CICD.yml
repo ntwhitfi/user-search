@@ -147,7 +147,7 @@ Resources:
           Actions:
             - InputArtifacts:
                 - Name: SourceOutput
-              Name: CodeBuild
+              Name: BuildAndDeployToDev
               ActionTypeId:
                 Category: Build
                 Owner: AWS
