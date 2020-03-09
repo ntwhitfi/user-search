@@ -99,6 +99,8 @@ Resources:
             Value: !Ref UserSearchUIS3Bucket
           - Name: CLOUDFRONT_DISTRIBUTION_ID
             Value: !Ref UserSearchCloudFrontDistributionId
+          - Name: USER_POOL_ID
+            Value: us-east-1_6RJhZOwDs
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecDeployFile
