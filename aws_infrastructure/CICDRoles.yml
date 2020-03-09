@@ -1,0 +1,200 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates the IAM Roles for the User Search CodePipeline and CodeBuild projects.
+
+Parameters:
+  Author:
+    Description: Author's name
+    Type: String
+    Default: ntwhitfi
+    MinLength: 3
+    MaxLength: 30
+
+Resources:
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "UserSearchCodePipelineRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: UserSearchCICDPipelinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codepipeline:EnableStageTransition
+                  - codepipeline:DisableStageTransition
+                Resource: !Sub "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:UserSearch*"
+        - PolicyName: UserSearchCICDS3Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketPolicy
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:PutObjectVersion
+                  - s3:ListAllMyBuckets
+                  - s3:ListBucket
+                Resource:
+                  - !Sub "arn:aws:s3:::ntwhitfi-codebuild-artifacts*"
+                  - !Sub "arn:aws:s3:::ntwhitfi-codebuild-artifacts*/*"
+        - PolicyName: UserSearchCICDIAMPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:ListRoles
+                  - iam:PassRole
+                Resource:
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:role/UserSearch*"
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "UserSearchCodeBuildRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: UserSearchCICDCloudFormationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:List*
+                  - cloudformation:Describe*
+                  - cloudformation:CreateStack
+                  - cloudformation:CreateUploadBucket
+                  - cloudformation:DeleteStack
+                  - cloudformation:GetStackPolicy
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:TagResource
+                  - cloudformation:UntagResource
+                  - cloudformation:UpdateStack
+                  - cloudformation:UpdateStackSet
+                  - cloudformation:UpdateTerminationProtection
+                  - cloudformation:ValidateTemplate
+                Resource:
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserSearch*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Search*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-search*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserAuth*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Auth*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-auth*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserRequest*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-request*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Request*"
+        - PolicyName: UserSearchCodeBuildS3Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketPolicy
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:PutObjectVersion
+                  - s3:ListAllMyBuckets
+                  - s3:ListBucket
+                Resource:
+                  - !Sub "arn:aws:s3:::ntwhitfi*"
+                  - !Sub "arn:aws:s3:::ntwhitfi*/*"
+        - PolicyName: UserSearchCodeBuildCloudFrontPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                  - cloudfront:GetDistribution
+                  - cloudfront:GetStreamingDistribution
+                  - cloudfront:GetDistributionConfig
+                  - cloudfront:GetInvalidation
+                  - cloudfront:ListInvalidations
+                  - cloudfront:ListStreamingDistributions
+                  - cloudfront:ListDistributions
+                Resource: "*"
+        - PolicyName: UserSearchCodeBuildSNSPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:CreateInvalidation
+                  - sns:Get*
+                  - sns:List*
+                  - sns:Describe*
+                  - sns:AddPermission
+                  - sns:CreateTopic
+                  - sns:DeleteTopic
+                  - sns:GetEndpointAttributes
+                  - sns:GetPlatformApplicationAttributes
+                  - sns:RemovePermission
+                  - sns:TagResource
+                Resource: "*"
+        - PolicyName: UserSearchCodeBuildCloudWatchPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:List*
+                  - cloudwatch:Describe*
+                  - cloudwatch:DeleteAlarms
+                  - cloudwatch:DisableAlarmActions
+                  - cloudwatch:EnableAlarmActions
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:TagResource
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:Describe*
+                  - logs:List*
+                  - logs:DeleteLogGroup
+                  - logs:DeleteLogStream
+                  - logs:DeleteMetricFilter
+                  - logs:DeleteResourcePolicy
+                  - logs:DeleteRetentionPolicy
+                  - logs:DeleteSubscriptionFilter
+                  - logs:TagLogGroup
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - events:DeleteRule
+                  - events:DescribeRule
+                  - events:DisableRule
+                  - events:EnableRule
+                  - events:ListRules
+                  - events:ListTargetsByRule
+                  - events:PutPermission
+                  - events:PutRule
+                  - events:PutTargets
+                  - events:RemovePermission
+                  - events:RemoveTargets
+                  - events:TagResource
+                  - events:TestEventPattern
+                Resource: "*"
