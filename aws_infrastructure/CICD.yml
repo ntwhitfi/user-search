@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates Continuous Integration Build/Deploy Jobs.
+Parameters:
+  Author:
+    Description: What is the authors name
+    Type: String
+    Default: ntwhitfi
+    MinLength: 3
+    MaxLength: 30
+  BuildSpecDevFile:
+    Description: The relative path to your BuildSpec file to use for building and deploying to dev environment.
+    Type: String
+    Default: buildspec.yml
+  BuildSpecDeployFile:
+    Description: The relative path to your BuildSepc file to use for deploying the built artifacts to other environments.
+    Type: String
+    Default: buildspec_deploy.yml
+  ProjectName:
+    Description: The name of the project being deployed from the pipeline.
+    Type: String
+  CodeBuildArtifactS3Bucket:
+    Description: The name of the S3 bucket to store artifacts from AWS CodeBuild in
+    Type: String
+    Default: ntwhitfi-codebuild-artifacts
+  CodeBuildDockerImage:
+    Description: The docker image to use for the CodeBuild projects
+    Type: String
+    Default: aws/codebuild/amazonlinux2-x86_64-standard:2.0
+  CodeBuildContainerType:
+    Description: The type of container to use for the CodeBuild docker container
+    Type: String
+    Default: LINUX_CONTAINER
+  Timeout:
+    Description: The timeout for the CodeBuild project execution in minutes.
+    Type: Number
+    Default: 15
+  BranchName:
+    Description: GitHub branch name
+    Type: String
+    Default: master
+  RepositoryName:
+    Description: GitHub repository name
+    Type: String
+    Default: user-search
+  GitHubOwner:
+    Description: User with access to the GitHub repo and branch
+    Type: String
+    Default: ntwhitfi
+  GitHubOAuthToken:
+    Description: OAuth token used to connect to the GitHub repository for the CodePipeline execution
+    Type: String
+    NoEcho: true
+  UserSearchUIS3Bucket:
+    Description: The S3 bucket to deploy the UI files to
+    Type: String
+    Default: ntwhitfi-user-search-ui
+  UserSearchCloudFrontDistributionId:
+    Description: The CloudFront distribution id for the User Search application
+    Type: String
+    Default: E1L7HSVT5D0Z2A
+Resources:
+  UserSearchCodeBuildDev:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${ProjectName}-dev"
+      ServiceRole: !Sub "arn:aws:iam::${AWS::AccountId}:role/UserSearchCodeBuildRole"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !Ref CodeBuildDockerImage
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: ENVIRONMENT
+            Value: dev
+          - Name: BUCKET_NAME
+            Value: !Ref UserSearchUIS3Bucket
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
+            Value: !Ref UserSearchCloudFrontDistributionId
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecDevFile
+      TimeoutInMinutes: !Ref Timeout
+  UserSearchCodeBuildQa:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${ProjectName}-qa"
+      ServiceRole: !Sub "arn:aws:iam::${AWS::AccountId}:role/UserSearchCodeBuildRole"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !Ref CodeBuildDockerImage
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: ENVIRONMENT
+            Value: qa
+          - Name: BUCKET_NAME
+            Value: !Ref UserSearchUIS3Bucket
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
+            Value: !Ref UserSearchCloudFrontDistributionId
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecDeployFile
+      TimeoutInMinutes: !Ref Timeout
+
+  UserSearchCodePipeline:
+    Type: "AWS::CodePipeline::Pipeline"
+    Properties:
+      Name: !Sub "${ProjectName}-pipeline"
+      RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/UserSearchCodePipelineRole"
+      Stages:
+        - Name: Source
+          Actions:
+            - InputArtifacts: []
+              Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: '1'
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref RepositoryName
+                Branch: !Ref BranchName
+                OAuthToken: !Ref GitHubOAuthToken
+                PollForSourceChanges: false
+              RunOrder: 1
+        - Name: BuildAndDeployToDev
+          Actions:
+            - InputArtifacts:
+                - Name: SourceOutput
+              Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: '1'
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: BuildOut
+              Configuration:
+                ProjectName: !Sub "${ProjectName}-dev"
+              RunOrder: 1
+        - Name: DeployToQa
+          Actions:
+            - InputArtifacts: []
+              Name: ApproveToQa
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: '1'
+                Provider: Manual
+              OutputArtifacts: []
+              Configuration: {}
+              RunOrder: 1
+            - InputArtifacts:
+                - Name: BuildOut
+              Name: DeployToQa
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: '1'
+                Provider: CodeBuild
+              OutputArtifacts: []
+              Configuration:
+                ProjectName: !Sub "${ProjectName}-qa"
+              RunOrder: 2
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodeBuildArtifactS3Bucket

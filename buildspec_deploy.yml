@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - npm install -g serverless
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Deploying CloudFormation stacks
+      - cd user-search-auth
+      - serverless -v --stage $ENVIRONMENT deploy
+      - cd ../user-search-etl
+      - serverless -v --stage $ENVIRONMENT deploy
+      - cd ../user-search-request-authorizer
+      - serverless -v --stage $ENVIRONMENT deploy
+      - cd ../user-search-service
+      - serverless -v --stage $ENVIRONMENT deploy
+      - cd ../user-search-ui
+      - chmod +x deploy.sh
+      - ./deploy.sh
+artifacts:
+  files:
+    - '**/*'
