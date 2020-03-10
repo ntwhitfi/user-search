@@ -6,7 +6,6 @@ phases:
       nodejs: 12
     commands:
       - npm install -g serverless
-      - npm install -g @vue/cli
 
   post_build:
     commands:
