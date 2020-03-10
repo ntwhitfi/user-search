@@ -14,3 +14,4 @@ This module is responsible for searching the UserSearchTable and returning user 
 
 ## user-search-ui
 This module contains the UI for the user search application. This UI is hosted in AWS S3 and served via AWS CloudFront
+
