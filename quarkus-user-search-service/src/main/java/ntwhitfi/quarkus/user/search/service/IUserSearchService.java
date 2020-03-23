@@ -1,4 +1,4 @@
-package ntwhitfi.user.search.service;
+package ntwhitfi.quarkus.user.search.service;
 
 import ntwhitfi.user.search.common.model.UserRecord;
 

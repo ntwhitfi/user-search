@@ -1,15 +1,15 @@
-package ntwhitfi.user.search.service.config;
+package ntwhitfi.quarkus.user.search.service.config;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import dagger.Module;
 import dagger.Provides;
+import ntwhitfi.quarkus.user.search.service.IUserSearchService;
+import ntwhitfi.quarkus.user.search.service.UserSearchService;
 import ntwhitfi.user.search.common.model.UserRecord;
 import ntwhitfi.user.search.common.repository.IRepository;
 import ntwhitfi.user.search.common.repository.UserRecordRepository;
-import ntwhitfi.user.search.service.IUserSearchService;
-import ntwhitfi.user.search.service.UserSearchService;
 
 import javax.inject.Singleton;
 import java.util.List;

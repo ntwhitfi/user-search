@@ -1,4 +1,4 @@
-package ntwhitfi.user.search.service.model;
+package ntwhitfi.quarkus.user.search.service.model;
 
 import lombok.*;
 import ntwhitfi.user.search.common.model.UserRecord;

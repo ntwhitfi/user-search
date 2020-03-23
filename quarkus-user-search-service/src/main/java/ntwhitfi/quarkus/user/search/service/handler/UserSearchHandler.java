@@ -1,24 +1,26 @@
-package ntwhitfi.user.search.service.handler;
+package ntwhitfi.quarkus.user.search.service.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import ntwhitfi.user.search.service.config.DaggerUserSearchComponent;
-import ntwhitfi.user.search.service.config.UserSearchComponent;
+import ntwhitfi.quarkus.user.search.service.IUserSearchService;
+import ntwhitfi.quarkus.user.search.service.config.UserSearchComponent;
+import ntwhitfi.quarkus.user.search.service.model.UserSearchRequest;
+import ntwhitfi.quarkus.user.search.service.model.UserSearchResponse;
+import ntwhitfi.quarkus.user.search.service.config.DaggerUserSearchComponent;
 import ntwhitfi.user.search.common.model.UserRecord;
-import ntwhitfi.user.search.service.model.UserSearchRequest;
-import ntwhitfi.user.search.service.model.UserSearchResponse;
-import ntwhitfi.user.search.service.IUserSearchService;
 
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Named("userSearchHandler")
 public class UserSearchHandler implements RequestHandler<UserSearchRequest, UserSearchResponse> {
 
-    private static String QUERY_TYPE = System.getenv("QUERY_TYPE");
-    private static String GET_ALL_TYPE = System.getenv("GET_ALL_TYPE");
+    private static String QUERY_TYPE = "query";
+    private static String GET_ALL_TYPE = "all";
     private Gson gson = new Gson();
 
     private IUserSearchService userSearchService;

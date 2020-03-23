@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ntwhitfi</groupId>
@@ -9,12 +7,12 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>user-search-service</module>
         <module>user-search-common</module>
         <module>user-search-etl</module>
         <module>user-search-auth</module>
         <module>user-search-request-authorizer</module>
-    </modules>
+      <module>quarkus-user-search-service</module>
+  </modules>
 
     <build>
         <plugins>
@@ -22,7 +20,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>10</release>
+                    <compilerVersion>1.8</compilerVersion>
+                    <target>1.8</target>
+                    <source>1.8</source>
                     <compilerArgs>
                         <arg>-Xlint:all,-processing</arg>
                     </compilerArgs>

@@ -1,7 +1,7 @@
-package ntwhitfi.user.search.service.config;
+package ntwhitfi.quarkus.user.search.service.config;
 
 import dagger.Component;
-import ntwhitfi.user.search.service.IUserSearchService;
+import ntwhitfi.quarkus.user.search.service.IUserSearchService;
 
 import javax.inject.Singleton;
 
