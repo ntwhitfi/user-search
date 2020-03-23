@@ -17,8 +17,8 @@ import java.util.List;
 @Slf4j
 public class UserSearchHandler implements RequestHandler<UserSearchRequest, UserSearchResponse> {
 
-    private static String QUERY_TYPE = System.getenv("QUERY_TYPE");
-    private static String GET_ALL_TYPE = System.getenv("GET_ALL_TYPE");
+    private static String QUERY_TYPE = "query";
+    private static String GET_ALL_TYPE = "all";
     private Gson gson = new Gson();
 
     private IUserSearchService userSearchService;

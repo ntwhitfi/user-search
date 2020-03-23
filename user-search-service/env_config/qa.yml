@@ -1,7 +1,3 @@
-queryType: query
-
-getAllType: all
-
 region: us-east-1
 
 artifactPath: target/user-search-service-1.0-SNAPSHOT.jar

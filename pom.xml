@@ -22,7 +22,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>10</release>
+                    <compilerVersion>1.8</compilerVersion>
+                    <target>1.8</target>
+                    <source>1.8</source>
                     <compilerArgs>
                         <arg>-Xlint:all,-processing</arg>
                     </compilerArgs>

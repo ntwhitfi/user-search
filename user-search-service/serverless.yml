@@ -27,9 +27,6 @@ functions:
   UserSearchHandler:
     handler: ntwhitfi.user.search.service.handler.UserSearchHandler
     name: UserSearchHandler-${opt:stage, self:provider.stage}
-    environment:
-      QUERY_TYPE: ${self:custom.props.queryType}
-      GET_ALL_TYPE: ${self:custom.props.getAllType}
     events:
       - http:
           path: /user/search
