@@ -25,7 +25,7 @@ phases:
       - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-request-authorizer
       - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
-      - cd ../user-search-service
+      - cd ../quarkus-user-search-service
       - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-ui
       - export CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID_EAST}"
