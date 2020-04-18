@@ -28,7 +28,7 @@ provider:
   region: ${opt:region, self:custom.props.region}
   memorySize: ${self:custom.props.memorySize}
   timeout: ${self:custom.props.timeout}
-  deploymentBucket: ${self:custom.props.deploymentBucketName}
+  deploymentBucket: ${self:custom.props.deploymentBucketName}-${opt:region, self:custom.props.region}
   role: ${self:custom.props.lambdaRole}-${opt:region, self:custom.props.region}
 
 functions:

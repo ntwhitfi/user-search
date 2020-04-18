@@ -20,7 +20,7 @@ provider:
   region: ${opt:region, self:custom.props.region}
   memorySize: ${self:custom.props.memorySize}
   timeout: ${self:custom.props.timeout}
-  deploymentBucket: ${self:custom.props.deploymentBucketName}
+  deploymentBucket: ${self:custom.props.deploymentBucketName}-${opt:region, self:custom.props.region}
   role: ${self:custom.props.lambdaRole}-${opt:region, self:custom.props.region}
 
 functions:
@@ -55,19 +55,6 @@ functions:
 
 resources: # CloudFormation template syntax from here on.
   Resources:
-    #Create the DynamoDB table that will contain searchable user records
-    userSearchTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: UserSearchTable-${opt:stage, self:provider.stage}
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-
     #Create SNS topic to handle sending the CloudWatch alarms
     UserSearchHandlerSNSTopic:
       Type: AWS::SNS::Topic

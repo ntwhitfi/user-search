@@ -25,7 +25,7 @@ provider:
   region: ${opt:region, self:custom.props.region} # region in AWS to deploy to
   memorySize: ${self:custom.props.memorySize} # memory allocated to function
   timeout: ${self:custom.props.timeout} # max timeout for function execution
-  deploymentBucket: ${self:custom.props.deploymentBucketName} # where to deploy the packaged function files (JAR file)
+  deploymentBucket: ${self:custom.props.deploymentBucketName}-${opt:region, self:custom.props.region} # where to deploy the packaged function files (JAR file)
   role: ${self:custom.props.lambdaRole}-${opt:region, self:custom.props.region} # The AWS IAM role that this function will assume during execution
 
 # defines the functions that will be deployed to AWS Lambda
