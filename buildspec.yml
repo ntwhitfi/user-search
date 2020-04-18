@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11 # Requires corretto when using the AMZN linux 2 docker image
+      java: corretto8 # Requires corretto when using the AMZN linux 2 docker image
       nodejs: 12
     commands:
       - npm install -g serverless
