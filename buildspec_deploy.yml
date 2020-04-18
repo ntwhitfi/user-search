@@ -12,22 +12,48 @@ phases:
       - echo Build completed on `date`
       - echo Deploying CloudFormation stacks
       - cd aws_infrastructure
-      # Deploy the IAM roles
-      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --parameter-overrides Environment=${ENVIRONMENT} UserPoolId=${USER_POOL_ID} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset
-      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --parameter-overrides UserSearchDynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset
-      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --parameter-overrides UserPoolId=${USER_POOL_ID} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset
-      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --parameter-overrides DynamoDBTableName=UserSearchTable-${ENVIRONMENT} Environment=${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset
+      # deploy the IAM roles to us-east-1
+      - export REGION="us-east-1"
+      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      # Deploy to us-east-1
       - cd ../user-search-auth
-      - serverless -v --stage $ENVIRONMENT deploy
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-etl
-      - serverless -v --stage $ENVIRONMENT deploy
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-request-authorizer
-      - serverless -v --stage $ENVIRONMENT deploy
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-service
-      - serverless -v --stage $ENVIRONMENT deploy
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-ui
+      - export CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID_EAST}"
+      - export BUCKET_NAME="${BUCKET_NAME_EAST}"
       - chmod +x deploy.sh
       - ./deploy.sh
+
+      # deploy the IAM roles to us-west-1
+      - export REGION="us-west-1"
+      - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      - aws cloudformation deploy --template-file UserSearchIAM.yml --stack-name UserSearchRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
+      # Deploy to us-west-1
+      - cd ../user-search-auth
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
+      - cd ../user-search-etl
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
+      - cd ../user-search-request-authorizer
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
+      - cd ../quarkus-user-search-service
+      - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
+      - cd ../user-search-ui
+      - export CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID_WEST}"
+      - export BUCKET_NAME="${BUCKET_NAME_WEST}"
+      - chmod +x deploy.sh
+      - ./deploy.sh
+
 artifacts:
   files:
     - '**/*'

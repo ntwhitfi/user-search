@@ -58,6 +58,14 @@ Parameters:
     Description: The S3 bucket to deploy the UI files to
     Type: String
     Default: ntwhitfi-user-search-ui-qa
+  UserSearchUIS3BucketDevWest:
+    Description: The S3 bucket to deploy the UI files to
+    Type: String
+    Default: ntwhitfi-user-search-ui-west
+  UserSearchUIS3BucketQaWest:
+    Description: The S3 bucket to deploy the UI files to
+    Type: String
+    Default: ntwhitfi-user-search-ui-qa-west
   UserSearchCloudFrontDistributionIdDev:
     Description: The CloudFront distribution id for the User Search application
     Type: String
@@ -66,6 +74,14 @@ Parameters:
     Description: The CloudFront distribution id for the User Search application
     Type: String
     Default: E1HH2SX3ZDMZTX
+  UserSearchCloudFrontDistributionIdDevWest:
+    Description: The CloudFront distribution id for the User Search application
+    Type: String
+    Default: E3ELSBDHX9N2TX
+  UserSearchCloudFrontDistributionIdQaWest:
+    Description: The CloudFront distribution id for the User Search application
+    Type: String
+    Default: E39I2W4K2J0EIR
 Resources:
   UserSearchCodeBuildDev:
     Type: AWS::CodeBuild::Project
@@ -81,10 +97,14 @@ Resources:
         EnvironmentVariables:
           - Name: ENVIRONMENT
             Value: dev
-          - Name: BUCKET_NAME
+          - Name: BUCKET_NAME_EAST
             Value: !Ref UserSearchUIS3BucketDev
-          - Name: CLOUDFRONT_DISTRIBUTION_ID
+          - Name: BUCKET_NAME_WEST
+            Value: !Ref UserSearchUIS3BucketDevWest
+          - Name: CLOUDFRONT_DISTRIBUTION_ID_EAST
             Value: !Ref UserSearchCloudFrontDistributionIdDev
+          - Name: CLOUDFRONT_DISTRIBUTION_ID_WEST
+            Value: !Ref UserSearchCloudFrontDistributionIdDevWest
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecDevFile
@@ -103,10 +123,14 @@ Resources:
         EnvironmentVariables:
           - Name: ENVIRONMENT
             Value: qa
-          - Name: BUCKET_NAME
+          - Name: BUCKET_NAME_EAST
             Value: !Ref UserSearchUIS3BucketQa
-          - Name: CLOUDFRONT_DISTRIBUTION_ID
+          - Name: BUCKET_NAME_WEST
+            Value: !Ref UserSearchUIS3BucketQaWest
+          - Name: CLOUDFRONT_DISTRIBUTION_ID_EAST
             Value: !Ref UserSearchCloudFrontDistributionIdQa
+          - Name: CLOUDFRONT_DISTRIBUTION_ID_WEST
+            Value: !Ref UserSearchCloudFrontDistributionIdQaWest
           - Name: USER_POOL_ID
             Value: us-east-1_6RJhZOwDs
       Source:
