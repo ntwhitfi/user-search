@@ -32,7 +32,7 @@ Resources:
                 Action:
                   - codepipeline:EnableStageTransition
                   - codepipeline:DisableStageTransition
-                Resource: !Sub "arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:UserSearch*"
+                Resource: !Sub "arn:aws:codepipeline:*:${AWS::AccountId}:UserSearch*"
         - PolicyName: UserSearchCICDCodeBuildPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -45,7 +45,7 @@ Resources:
                   - codebuild:InvalidateProjectCache
                   - codebuild:StartBuild
                   - codebuild:StopBuild
-                Resource: !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/user-search*"
+                Resource: !Sub "arn:aws:codebuild:*:${AWS::AccountId}:project/user-search*"
         - PolicyName: UserSearchCICDS3Policy
           PolicyDocument:
             Version: '2012-10-17'
@@ -105,15 +105,15 @@ Resources:
                   - cloudformation:UpdateStackSet
                   - cloudformation:UpdateTerminationProtection
                 Resource:
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserSearch*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Search*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-search*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserAuth*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Auth*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-auth*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/UserRequest*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/user-request*"
-                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/User-Request*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/UserSearch*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/User-Search*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/user-search*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/UserAuth*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/User-Auth*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/user-auth*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/UserRequest*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/user-request*"
+                  - !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/User-Request*"
         - PolicyName: UserSearchCodeBuildCloudFormationAllPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -143,7 +143,7 @@ Resources:
                   - dynamodb:ListTables
                   - dynamodb:UpdateTable
                 Resource:
-                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/UserSearchTable*"
+                  - !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/UserSearchTable*"
         - PolicyName: UserSearchCodeBuildServerlessPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -181,11 +181,11 @@ Resources:
                   - lambda:RemovePermission
                   - lambda:Update*
                 Resource:
-                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserSearchHandler-*"
-                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserETLHandler-*"
-                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:UserAuthHandler-*"
-                  - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:RequestAuthorizerHandler-*"
-                  - !Sub "arn:aws:apigateway:${AWS::Region}::/restapis*"
+                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserSearchHandler-*"
+                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserETLHandler-*"
+                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserAuthHandler-*"
+                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:RequestAuthorizerHandler-*"
+                  - !Sub "arn:aws:apigateway:*::/restapis*"
               - Effect: Allow
                 Action:
                   - lambda:Get*

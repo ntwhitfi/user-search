@@ -33,7 +33,7 @@ Resources:
     Properties:
       # !Join used to combine values. in this case, '' is defined as the joining character. if this was '-', the parts would be joined with a '-' between them.
       # !Ref is used to reference the value of a Logical ID in the template. The returned value from a !Ref depends on the type of resource (including parameters) being referenced
-      RoleName: !Join [ '', [ 'UserETLRole-', !Ref Environment ] ]
+      RoleName: !Sub "UserETLRole-${Environment}-${AWS::Region}"
       # Used to assign a custom or AWS managed policy to an IAM role.
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

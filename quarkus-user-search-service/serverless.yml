@@ -21,7 +21,7 @@ provider:
   memorySize: ${self:custom.props.memorySize}
   timeout: ${self:custom.props.timeout}
   deploymentBucket: ${self:custom.props.deploymentBucketName}
-  role: ${self:custom.props.lambdaRole}
+  role: ${self:custom.props.lambdaRole}-${opt:region, self:custom.props.region}
 
 functions:
   UserSearchHandler:

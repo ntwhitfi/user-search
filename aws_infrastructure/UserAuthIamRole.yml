@@ -24,7 +24,7 @@ Resources:
   UserAuthRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join [ '', [ 'UserAuthRole-', !Ref Environment ] ]
+      RoleName: !Sub "UserAuthRole-${Environment}-${AWS::Region}"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       AssumeRolePolicyDocument:

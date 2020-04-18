@@ -24,7 +24,7 @@ Resources:
   TicketingSystemAuthRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join [ '', [ 'UserSearchRole-', !Ref Environment ] ]
+      RoleName: !Sub "UserSearchRole-${Environment}-${AWS::Region}"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       AssumeRolePolicyDocument:
