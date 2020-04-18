@@ -35,6 +35,7 @@ phases:
 
       # deploy the IAM roles to us-west-1
       - export REGION="us-west-1"
+      - cd ../aws_infrastructure
       - aws cloudformation deploy --template-file UserAuthIamRole.yml --stack-name UserAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
       - aws cloudformation deploy --template-file UserETLIAM.yml --stack-name UserSearchETLIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
       - aws cloudformation deploy --template-file UserRequestAuthorizerIamRole.yml --stack-name UserRequestAuthIAMRole-${ENVIRONMENT} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset --region ${REGION}
