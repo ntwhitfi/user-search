@@ -17,7 +17,7 @@ provider:
   name: aws
   runtime: java8
   stage: dev
-  region: ${self:custom.props.region}
+  region: ${opt:region, self:custom.props.region}
   memorySize: ${self:custom.props.memorySize}
   timeout: ${self:custom.props.timeout}
   deploymentBucket: ${self:custom.props.deploymentBucketName}

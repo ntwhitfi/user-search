@@ -22,7 +22,7 @@ provider:
   name: aws
   runtime: java11 # runtime for the lambda function
   stage: dev # stage is equivalent to environment
-  region: ${self:custom.props.region} # region in AWS to deploy to
+  region: ${opt:region, self:custom.props.region} # region in AWS to deploy to
   memorySize: ${self:custom.props.memorySize} # memory allocated to function
   timeout: ${self:custom.props.timeout} # max timeout for function execution
   deploymentBucket: ${self:custom.props.deploymentBucketName} # where to deploy the packaged function files (JAR file)
