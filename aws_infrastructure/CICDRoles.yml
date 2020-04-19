@@ -133,6 +133,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - dynamodb:CreateTable
+                  - dynamodb:CreateGlobalTable
                   - dynamodb:DeleteTable
                   - dynamodb:DescribeLimits
                   - dynamodb:DescribeReservedCapacity
