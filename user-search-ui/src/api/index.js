@@ -2,12 +2,12 @@
 import axios from "axios";
 
 const userSearchInstance = axios.create({
-  baseURL: "https://bemzagwyfb.execute-api.us-east-1.amazonaws.com/dev",
+  baseURL: "https://api.usersearch.dev.ntwhitfi.com/search",
   headers: {'Content-Type': 'application/json'}
 });
 
 const userAuthInstance = axios.create({
-  baseURL: "https://5n4l7vcv1m.execute-api.us-east-1.amazonaws.com/dev",
+  baseURL: "https://api.usersearch.dev.ntwhitfi.com/auth",
   headers: {'Content-Type': 'application/json'}
 });
 
