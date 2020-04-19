@@ -25,7 +25,7 @@ Parameters:
   CodeBuildDockerImage:
     Description: The docker image to use for the CodeBuild projects
     Type: String
-    Default: aws/codebuild/amazonlinux2-x86_64-standard:2.0
+    Default: aws/codebuild/amazonlinux2-x86_64-standard:3.0
   CodeBuildContainerType:
     Description: The type of container to use for the CodeBuild docker container
     Type: String
