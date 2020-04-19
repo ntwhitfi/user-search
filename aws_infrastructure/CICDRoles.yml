@@ -183,7 +183,7 @@ Resources:
                   - lambda:RemovePermission
                   - lambda:Update*
                 Resource:
-                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserSearchHandler-*"
+                  - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserSearch*"
                   - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserETLHandler-*"
                   - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:UserAuthHandler-*"
                   - !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:RequestAuthorizerHandler-*"
