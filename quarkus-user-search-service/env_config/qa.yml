@@ -1,5 +1,7 @@
 region: us-east-1
 
+accountId: 380986832728
+
 artifactPath: target/quarkus-user-search-service-1.0-SNAPSHOT-runner.jar
 
 memorySize: 256
@@ -20,6 +22,6 @@ tags:
   - Key: gitRepo
     Value: user-search
 
-lambdaAuthorizer: arn:aws:lambda:us-east-1:380986832728:function:RequestAuthorizerHandler-qa
+lambdaAuthorizer: RequestAuthorizerHandler-qa
 
 corsOrigin: "*"

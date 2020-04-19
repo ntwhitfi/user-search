@@ -42,7 +42,7 @@ functions:
               - X-Amz-User-Agent
               - X-Apollo-Tracing
           authorizer:
-            arn: ${self:custom.props.lambdaAuthorizer}
+            arn: arn:aws:lambda:${opt:region, self:custom.props.region}:${self:custom.props.accountId}:function:${self:custom.props.lambdaAuthorizer}
             identitySource: method.request.header.Authorization
           request:
             parameters:
