@@ -277,6 +277,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - dynamodb:CreateGlobalTable
+                  - dynamodb:DescribeLimits
                   - iam:CreateServiceLinkedRole
                 Resource:
                   - "*"
