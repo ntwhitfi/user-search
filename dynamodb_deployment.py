@@ -54,14 +54,17 @@ try:
 except dynamodb_client.exceptions.ResourceInUseException:
     pass # do nothing, table exists
 
-response = dynamodb_client.create_global_table(
-    GlobalTableName='UserSearchTable',
-    ReplicationGroup=[
-        {
-            'RegionName': 'us-east-1'
-        },
-        {
-            'RegionName': 'us-west-1'
-        },
-    ]
-)
+try:
+    response = dynamodb_client.create_global_table(
+        GlobalTableName='UserSearchTable',
+        ReplicationGroup=[
+            {
+                'RegionName': 'us-east-1'
+            },
+            {
+                'RegionName': 'us-west-1'
+            },
+        ]
+    )
+except dynamodb_client.exceptions.GlobalTableAlreadyExistsException
+    pass
