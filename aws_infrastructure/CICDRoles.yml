@@ -273,7 +273,7 @@ Resources:
                   - iam:UpdateRoleDescription
                 Resource:
                   - !Sub "arn:aws:iam::${AWS::AccountId}:role/User*"
-
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:role/AWSServiceRole*"
         - PolicyName: UserSearchCodeBuildCloudFrontPolicy
           PolicyDocument:
             Version: '2012-10-17'
