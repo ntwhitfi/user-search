@@ -66,5 +66,5 @@ try:
             },
         ]
     )
-except dynamodb_client.exceptions.GlobalTableAlreadyExistsException
+except dynamodb_client.exceptions.GlobalTableAlreadyExistsException:
     pass
