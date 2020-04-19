@@ -20,6 +20,8 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Deploying CloudFormation stacks
+
+      # Deploy the dynamoDB tables for userSearch app
       - python dynamodb_deployment.py
       - cd aws_infrastructure
       # deploy the IAM roles to us-east-1

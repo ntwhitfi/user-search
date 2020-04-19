@@ -52,6 +52,24 @@ functions:
             template:
               application/json: '{"type": "$input.params("type")", "query": "$input.params("query")"}'
           integration: lambda
+  UserSearchHealthHandler:
+    handler: ntwhitfi.quarkus.user.search.service.handler.UserSearchHealthHandler
+    name: UserSearchHealthHandler-${opt:stage, self:provider.stage}
+    events:
+      - http:
+          path: /health
+          method: GET
+          cors:
+            origin: ${self:custom.props.corsOrigin}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Apollo-Tracing
+          integration: lambda
 
 resources: # CloudFormation template syntax from here on.
   Resources:

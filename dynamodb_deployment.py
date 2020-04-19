@@ -2,7 +2,7 @@ import boto3
 
 dynamodb_client = boto3.client('dynamodb', region_name='us-east-1')
 
-# Attempt to create the global UserSearchTable
+# Attempt to create the us-east-1 UserSearchTable
 try:
     response = dynamodb_client.create_table(
         TableName='UserSearchTable',
@@ -29,7 +29,7 @@ except dynamodb_client.exceptions.ResourceInUseException:
 
 dynamodb_client = boto3.client('dynamodb', region_name='us-west-1')
 
-# Attempt to create the global UserSearchTable
+# Attempt to create the us-west-1 UserSearchTable
 try:
     response = dynamodb_client.create_table(
         TableName='UserSearchTable',
@@ -54,6 +54,7 @@ try:
 except dynamodb_client.exceptions.ResourceInUseException:
     pass # do nothing, table exists
 
+# Create the global table setup for UserSearchTable
 try:
     response = dynamodb_client.create_global_table(
         GlobalTableName='UserSearchTable',
