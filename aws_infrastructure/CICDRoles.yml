@@ -145,6 +145,7 @@ Resources:
                   - dynamodb:UpdateTable
                 Resource:
                   - !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/UserSearchTable*"
+                  - !Sub "arn:aws:dynamodb::${AWS::AccountId}:global-table/UserSearchTable*"
         - PolicyName: UserSearchCodeBuildServerlessPolicy
           PolicyDocument:
             Version: '2012-10-17'
