@@ -274,6 +274,12 @@ Resources:
                 Resource:
                   - !Sub "arn:aws:iam::${AWS::AccountId}:role/User*"
                   - !Sub "arn:aws:iam::${AWS::AccountId}:role/AWSServiceRole*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:CreateGlobalTable
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - "*"
         - PolicyName: UserSearchCodeBuildCloudFrontPolicy
           PolicyDocument:
             Version: '2012-10-17'

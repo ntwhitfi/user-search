@@ -4,6 +4,27 @@ dynamodb_client = boto3.client('dynamodb')
 
 # Attempt to create the global UserSearchTable
 try:
+    response = dynamodb_client.create_table(
+        TableName='UserSearchTable',
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'id',
+                'AttributeType': 'S'
+            }
+        ],
+        KeySchema=[
+            {
+                'AttributeName': 'id',
+                'KeyType': 'HASH'
+            }
+        ],
+        BillingMode='PAY_PER_REQUEST',
+        StreamSpecification={
+            'StreamEnabled': True,
+            'StreamViewType': 'NEW_AND_OLD_IMAGES'
+        }
+    )
+
     response = dynamodb_client.create_global_table(
         GlobalTableName='UserSearchTable',
         ReplicationGroup=[
