@@ -35,7 +35,7 @@ export default new Vuex.Store({
     login({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        Axios({url: 'https://5n4l7vcv1m.execute-api.us-east-1.amazonaws.com/dev/auth', data: user, method: 'POST' })
+        Axios({url: 'https://api.usersearch.dev.ntwhitfi.com/auth', data: user, method: 'POST' })
         //api.login(user)
         .then(resp => {
           const token = resp.data.authToken

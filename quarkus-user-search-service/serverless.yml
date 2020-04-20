@@ -29,7 +29,7 @@ functions:
     name: UserSearchHandler-${opt:stage, self:provider.stage}
     events:
       - http:
-          path: /user/search
+          path: /user
           method: GET
           cors:
             origin: ${self:custom.props.corsOrigin}

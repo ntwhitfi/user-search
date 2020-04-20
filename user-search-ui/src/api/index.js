@@ -11,7 +11,7 @@ const userAuthInstance = axios.create({
   headers: {'Content-Type': 'application/json'}
 });
 
-const userSearchContextPath = "/user/search";
+const userSearchContextPath = "/user";
 const searchQueryTypeParameter = "query"
 
 const api = {
@@ -21,7 +21,7 @@ const api = {
   },
   login(user) {
     new Promise ((resolve, reject) => {
-      userAuthInstance.post('/auth', user)
+      userAuthInstance.post('', user)
         .then(resp => {
           const token = resp.data.token
           localStorage.setItem('authToken', token) // store the token in localstorage

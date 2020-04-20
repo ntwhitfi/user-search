@@ -40,7 +40,7 @@ functions:
       CLIENT_ID: ${ssm:UserSearchAuthClientId~true}
     events:
       - http:
-          path: /auth
+          path: /
           method: POST
           cors:
             origin: ${self:custom.props.corsOrigin}
