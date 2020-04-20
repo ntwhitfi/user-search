@@ -76,7 +76,7 @@ public class RequestAuthorizerHandler implements RequestHandler<AuthRequest, Aut
 
         //Split the ARN from the request to get the parts required for the auth policy generation
         String[] arnPartials = methodArn.split(METHOD_ARN_SPLIT_PATTERN);
-        String region = arnPartials[3];
+        String region = System.getenv("REGION");
         String awsAccountId = arnPartials[4];
 
         //Get API gateway parts from method arn.

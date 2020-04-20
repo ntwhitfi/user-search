@@ -74,14 +74,6 @@ Parameters:
     Description: The CloudFront distribution id for the User Search application
     Type: String
     Default: E1HH2SX3ZDMZTX
-  UserSearchCloudFrontDistributionIdDevWest:
-    Description: The CloudFront distribution id for the User Search application
-    Type: String
-    Default: E3ELSBDHX9N2TX
-  UserSearchCloudFrontDistributionIdQaWest:
-    Description: The CloudFront distribution id for the User Search application
-    Type: String
-    Default: E39I2W4K2J0EIR
 Resources:
   UserSearchCodeBuildDev:
     Type: AWS::CodeBuild::Project
@@ -102,10 +94,8 @@ Resources:
             Value: !Ref UserSearchUIS3BucketDev
           - Name: BUCKET_NAME_WEST
             Value: !Ref UserSearchUIS3BucketDevWest
-          - Name: CLOUDFRONT_DISTRIBUTION_ID_EAST
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
             Value: !Ref UserSearchCloudFrontDistributionIdDev
-          - Name: CLOUDFRONT_DISTRIBUTION_ID_WEST
-            Value: !Ref UserSearchCloudFrontDistributionIdDevWest
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecDevFile
@@ -129,10 +119,8 @@ Resources:
             Value: !Ref UserSearchUIS3BucketQa
           - Name: BUCKET_NAME_WEST
             Value: !Ref UserSearchUIS3BucketQaWest
-          - Name: CLOUDFRONT_DISTRIBUTION_ID_EAST
+          - Name: CLOUDFRONT_DISTRIBUTION_ID
             Value: !Ref UserSearchCloudFrontDistributionIdQa
-          - Name: CLOUDFRONT_DISTRIBUTION_ID_WEST
-            Value: !Ref UserSearchCloudFrontDistributionIdQaWest
           - Name: USER_POOL_ID
             Value: us-east-1_6RJhZOwDs
       Source:

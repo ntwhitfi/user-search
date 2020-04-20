@@ -28,7 +28,6 @@ phases:
       - cd ../quarkus-user-search-service
       - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-ui
-      - export CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID_EAST}"
       - export BUCKET_NAME="${BUCKET_NAME_EAST}"
       - chmod +x deploy.sh
       - ./deploy.sh
@@ -50,7 +49,6 @@ phases:
       - cd ../quarkus-user-search-service
       - serverless -v --stage $ENVIRONMENT deploy --region ${REGION}
       - cd ../user-search-ui
-      - export CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID_WEST}"
       - export BUCKET_NAME="${BUCKET_NAME_WEST}"
       - chmod +x deploy.sh
       - ./deploy.sh
